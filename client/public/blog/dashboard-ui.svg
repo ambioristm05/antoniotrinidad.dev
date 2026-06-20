@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Dashboard UI article preview</title>
+  <desc id="desc">A technical article cover showing dashboard cards, tables, and filters.</desc>
+  <rect width="960" height="540" fill="#f8fafc"/>
+  <rect x="92" y="70" width="776" height="400" rx="32" fill="#020617"/>
+  <rect x="132" y="112" width="696" height="316" rx="24" fill="#ffffff"/>
+  <rect x="168" y="150" width="154" height="80" rx="18" fill="#e0f2fe"/>
+  <rect x="354" y="150" width="154" height="80" rx="18" fill="#dff6ff"/>
+  <rect x="540" y="150" width="154" height="80" rx="18" fill="#eff6ff"/>
+  <rect x="168" y="270" width="526" height="104" rx="18" fill="#f1f5f9"/>
+  <rect x="198" y="302" width="96" height="10" rx="5" fill="#0f172a"/>
+  <rect x="198" y="334" width="438" height="9" rx="5" fill="#94a3b8"/>
+  <rect x="198" y="356" width="360" height="9" rx="5" fill="#94a3b8"/>
+  <path d="M188 206c28-32 50 8 78-24 18-20 28-24 44-8" fill="none" stroke="#0099ff" stroke-width="9" stroke-linecap="round"/>
+  <circle cx="780" cy="134" r="70" fill="#00d8ff" opacity=".28"/>
+  <circle cx="790" cy="395" r="44" fill="#0055b3" opacity=".24"/>
+</svg>

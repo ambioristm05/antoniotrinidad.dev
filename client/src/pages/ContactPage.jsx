@@ -1,0 +1,29 @@
+import ContactForm from '../components/ContactForm.jsx';
+import SectionHeader from '../components/SectionHeader.jsx';
+import { useSiteContent } from '../hooks/useSiteContent.js';
+
+export default function ContactPage() {
+  const { contact, profile } = useSiteContent();
+
+  return (
+    <section className="page-section">
+      <SectionHeader
+        eyebrow={contact.eyebrow}
+        title={contact.title}
+        description={contact.description}
+      />
+      <div className="split-layout split-layout--contact">
+        <ContactForm />
+        <aside className="contact-aside">
+          <h2>{contact.asideTitle}</h2>
+          <p>{profile.location}</p>
+          <a href={`mailto:${profile.email}`}>{profile.email}</a>
+          <div className="clean-list">
+            <p>{contact.responseTime}</p>
+            <p>{contact.bestWith}</p>
+          </div>
+        </aside>
+      </div>
+    </section>
+  );
+}

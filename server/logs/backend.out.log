@@ -1,0 +1,37 @@
+MongoDB connected: 127.0.0.1
+API running on port 5000 in development mode
+[0mGET /api/health [32m200[0m 5.611 ms - 47[0m
+[0mGET /api/health [36m304[0m 0.743 ms - -[0m
+[0mGET /api/health [32m200[0m 0.430 ms - 47[0m
+[0mGET / [33m404[0m 0.634 ms - 47[0m
+[0mGET / [33m404[0m 0.909 ms - 47[0m
+[0mGET /api/health [32m200[0m 1.239 ms - 47[0m
+[0mGET / [33m404[0m 0.547 ms - 47[0m
+[0mGET / [33m404[0m 0.357 ms - 47[0m
+[0mGET /api/health [32m200[0m 0.669 ms - 47[0m
+[0mGET / [33m404[0m 0.400 ms - 47[0m
+[0mGET / [33m404[0m 0.378 ms - 47[0m
+[0mGET /api/health [32m200[0m 2.342 ms - 47[0m
+[0mGET / [33m404[0m 0.290 ms - 47[0m
+[0mGET / [33m404[0m 0.369 ms - 47[0m
+[0mGET /api/health [32m200[0m 0.351 ms - 47[0m
+[0mGET / [33m404[0m 0.190 ms - 47[0m
+[0mGET / [33m404[0m 0.316 ms - 47[0m
+[0mGET /api/health [32m200[0m 0.516 ms - 47[0m
+[0mGET /api/health [36m304[0m 3.908 ms - -[0m
+[0mGET /api/health [32m200[0m 0.636 ms - 47[0m
+[0mGET / [33m404[0m 0.338 ms - 47[0m
+[0mGET / [33m404[0m 0.330 ms - 47[0m
+[0mGET /api/health [32m200[0m 0.359 ms - 47[0m
+[0mGET / [33m404[0m 0.171 ms - 47[0m
+[0mGET / [33m404[0m 0.384 ms - 47[0m
+[0mGET /api/health [32m200[0m 0.247 ms - 47[0m
+[0mGET / [33m404[0m 0.357 ms - 47[0m
+[0mGET / [33m404[0m 0.345 ms - 47[0m
+[0mGET /api/health [32m200[0m 0.288 ms - 47[0m
+[0mGET / [33m404[0m 0.243 ms - 47[0m
+[0mGET / [33m404[0m 0.288 ms - 47[0m
+[0mGET /api/health [32m200[0m 0.301 ms - 47[0m
+[0mGET / [33m404[0m 0.352 ms - 47[0m
+[0mGET /favicon.ico [33m404[0m 0.298 ms - 58[0m
+[0mGET /api [33m404[0m 0.221 ms - 50[0m

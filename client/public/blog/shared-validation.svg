@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Shared validation article preview</title>
+  <desc id="desc">A technical article cover showing frontend and backend validation flow.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#e0f7ff"/>
+      <stop offset="1" stop-color="#0055b3"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#bg)"/>
+  <rect x="120" y="148" width="260" height="244" rx="28" fill="#ffffff"/>
+  <rect x="580" y="148" width="260" height="244" rx="28" fill="#020617"/>
+  <rect x="166" y="202" width="128" height="14" rx="7" fill="#0f172a"/>
+  <rect x="166" y="252" width="168" height="38" rx="12" fill="#e2e8f0"/>
+  <rect x="166" y="316" width="118" height="38" rx="19" fill="#0099ff"/>
+  <rect x="626" y="202" width="126" height="14" rx="7" fill="#00d8ff"/>
+  <rect x="626" y="252" width="168" height="12" rx="6" fill="#94a3b8"/>
+  <rect x="626" y="286" width="132" height="12" rx="6" fill="#94a3b8"/>
+  <rect x="626" y="332" width="118" height="38" rx="19" fill="#0055b3"/>
+  <path d="M404 270h132" stroke="#020617" stroke-width="12" stroke-linecap="round"/>
+  <path d="m518 234 42 36-42 36" fill="none" stroke="#020617" stroke-width="12" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="480" cy="270" r="24" fill="#00d8ff"/>
+</svg>

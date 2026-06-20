@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">MERN MVP article preview</title>
+  <desc id="desc">A technical article cover showing layered MERN architecture blocks.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#020617"/>
+      <stop offset=".55" stop-color="#0055b3"/>
+      <stop offset="1" stop-color="#00d8ff"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#bg)"/>
+  <rect x="118" y="104" width="724" height="332" rx="28" fill="#f8fafc" opacity=".94"/>
+  <rect x="168" y="154" width="216" height="64" rx="18" fill="#0f172a"/>
+  <rect x="420" y="154" width="216" height="64" rx="18" fill="#0055b3"/>
+  <rect x="168" y="254" width="216" height="64" rx="18" fill="#0099ff"/>
+  <rect x="420" y="254" width="216" height="64" rx="18" fill="#0f172a"/>
+  <path d="M384 186h36M276 218v36M528 218v36M384 286h36" stroke="#00d8ff" stroke-width="10" stroke-linecap="round"/>
+  <rect x="184" y="180" width="112" height="12" rx="6" fill="#ffffff"/>
+  <rect x="436" y="180" width="108" height="12" rx="6" fill="#ffffff"/>
+  <rect x="184" y="280" width="118" height="12" rx="6" fill="#ffffff"/>
+  <rect x="436" y="280" width="112" height="12" rx="6" fill="#ffffff"/>
+  <rect x="672" y="164" width="104" height="154" rx="22" fill="#e2e8f0"/>
+  <rect x="698" y="202" width="52" height="12" rx="6" fill="#0055b3"/>
+  <rect x="698" y="238" width="42" height="10" rx="5" fill="#64748b"/>
+  <rect x="698" y="270" width="58" height="10" rx="5" fill="#64748b"/>
+</svg>

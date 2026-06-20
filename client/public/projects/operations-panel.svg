@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 540" role="img" aria-labelledby="title desc">
+  <title id="title">Operations dashboard preview</title>
+  <desc id="desc">A modern dashboard interface with charts, task rows, and status cards.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#002b5c"/>
+      <stop offset="1" stop-color="#00d8ff"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity=".94"/>
+      <stop offset="1" stop-color="#e6f7ff" stop-opacity=".86"/>
+    </linearGradient>
+  </defs>
+  <rect width="960" height="540" fill="url(#bg)"/>
+  <circle cx="780" cy="80" r="180" fill="#0099ff" opacity=".34"/>
+  <circle cx="130" cy="470" r="180" fill="#020617" opacity=".34"/>
+  <rect x="86" y="70" width="788" height="400" rx="28" fill="#020617" opacity=".5"/>
+  <rect x="118" y="104" width="724" height="332" rx="22" fill="url(#card)"/>
+  <rect x="150" y="136" width="170" height="268" rx="18" fill="#0b1422"/>
+  <rect x="178" y="168" width="76" height="14" rx="7" fill="#00d8ff"/>
+  <rect x="178" y="210" width="108" height="10" rx="5" fill="#94a3b8"/>
+  <rect x="178" y="246" width="84" height="10" rx="5" fill="#94a3b8"/>
+  <rect x="178" y="282" width="118" height="10" rx="5" fill="#94a3b8"/>
+  <rect x="178" y="338" width="94" height="34" rx="17" fill="#0099ff"/>
+  <rect x="356" y="140" width="190" height="96" rx="18" fill="#ffffff"/>
+  <rect x="578" y="140" width="220" height="96" rx="18" fill="#ffffff"/>
+  <path d="M382 208c30-58 58-18 88-56 14-18 34-22 54 18" fill="none" stroke="#0099ff" stroke-width="12" stroke-linecap="round"/>
+  <rect x="606" y="174" width="152" height="12" rx="6" fill="#0f172a"/>
+  <rect x="606" y="204" width="112" height="10" rx="5" fill="#64748b"/>
+  <rect x="356" y="268" width="442" height="118" rx="18" fill="#ffffff"/>
+  <rect x="390" y="300" width="92" height="12" rx="6" fill="#0f172a"/>
+  <rect x="390" y="334" width="356" height="10" rx="5" fill="#cbd5e1"/>
+  <rect x="390" y="362" width="286" height="10" rx="5" fill="#cbd5e1"/>
+</svg>
