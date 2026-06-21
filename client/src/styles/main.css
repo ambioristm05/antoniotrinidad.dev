@@ -1316,6 +1316,13 @@ textarea {
   font-weight: 800;
 }
 
+.form-error {
+  margin: 0;
+  color: #c53d3d;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
 .contact-aside {
   padding: 24px;
 }
@@ -1472,6 +1479,39 @@ textarea {
   border-radius: var(--radius);
 }
 
+.admin-session {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  left: 18px;
+  display: grid;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.admin-session__user {
+  display: grid;
+  min-width: 0;
+  gap: 4px;
+}
+
+.admin-session__user strong,
+.admin-session__user span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-session__user span {
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.admin-session .button {
+  justify-content: center;
+}
+
 .admin-main {
   min-width: 0;
   padding: 28px;
@@ -1487,6 +1527,21 @@ textarea {
   gap: 18px;
   align-items: center;
   justify-content: space-between;
+}
+
+.admin-feedback {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  border-left: 4px solid var(--amber);
+  background: var(--panel-soft);
+  color: var(--strong-muted);
+}
+
+.admin-feedback .button {
+  flex: 0 0 auto;
 }
 
 .stat-grid {
@@ -1508,6 +1563,7 @@ textarea {
   display: block;
   margin-top: 12px;
   font-size: 2.2rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .admin-grid {
@@ -1524,6 +1580,15 @@ textarea {
   display: grid;
   gap: 10px;
   margin-top: 16px;
+}
+
+.admin-state {
+  display: grid;
+  min-height: 76px;
+  margin: 0;
+  place-items: center;
+  color: var(--muted);
+  text-align: center;
 }
 
 .admin-list--wide {
@@ -1817,6 +1882,11 @@ th {
     height: auto;
     border-right: 0;
     border-bottom: 1px solid var(--line);
+  }
+
+  .admin-session {
+    position: static;
+    margin-top: 18px;
   }
 
   .admin-nav {

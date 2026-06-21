@@ -12,8 +12,11 @@ const categorySchema = new mongoose.Schema(
     },
     slug: {
       type: String,
+      required: [true, 'Category slug is required'],
       lowercase: true,
       trim: true,
+      maxlength: [100, 'Category slug cannot exceed 100 characters'],
+      match: [/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Category slug is invalid'],
     },
     type: {
       type: String,
@@ -27,7 +30,9 @@ const categorySchema = new mongoose.Schema(
 categorySchema.index({ slug: 1, type: 1 }, { unique: true });
 
 categorySchema.pre('validate', function setSlug(next) {
-  if (!this.slug && this.name) {
+  if (this.isModified('slug') && this.slug) {
+    this.slug = slugify(this.slug);
+  } else if (!this.slug && this.name) {
     this.slug = slugify(this.name);
   }
 

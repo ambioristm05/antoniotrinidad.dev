@@ -6,7 +6,7 @@ import { asyncHandler } from '../middlewares/asyncHandler.js';
 export const getCategories = asyncHandler(async (req, res) => {
   const filter = {};
 
-  if (req.query.type) filter.type = req.query.type;
+  if (req.query.type) filter.type = req.query.type.trim().toLowerCase();
 
   const categories = await Category.find(filter).sort('name');
 

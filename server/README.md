@@ -39,6 +39,7 @@ docker start antoniotrinidad-mongo
 | `JWT_SECRET` | Si | Secreto para firmar tokens JWT. |
 | `JWT_EXPIRES_IN` | No | Duracion del JWT. Por defecto `7d`. |
 | `CLIENT_URL` | No | Origen permitido por CORS. Por defecto `http://localhost:5173`. |
+| `TRUST_PROXY` | No | Numero de proxies confiables para obtener la IP real. Usa `1` en Render/Railway si hay un proxy delante. Por defecto `0`. |
 | `ADMIN_NAME` | No | Nombre usado por `npm run create:admin`. |
 | `ADMIN_EMAIL` | No | Email usado por `npm run create:admin`. |
 | `ADMIN_PASSWORD` | No | Password usado por `npm run create:admin`. |
@@ -49,9 +50,13 @@ docker start antoniotrinidad-mongo
 npm run dev          # nodemon src/server.js
 npm start            # node src/server.js
 npm test             # node --test
-npm run check        # node --check src/server.js
-npm run create:admin # crea/actualiza el admin inicial
+npm run test:coverage # tests con reporte de cobertura
+npm run lint         # ESLint
+npm run check        # lint y comprobacion de sintaxis
+npm run create:admin # crea el admin inicial si no existe
 ```
+
+`create:admin` es idempotente: crea el usuario definido por `ADMIN_EMAIL` solo cuando no existe y nunca reemplaza su password automaticamente.
 
 Si `npm` no esta disponible, puedes usar Node directamente:
 
@@ -64,6 +69,19 @@ node --test
 
 - [API reference](docs/API.md)
 - [Testing guide](docs/TESTING.md)
+- [Security guide](docs/SECURITY.md)
+- [Deployment guide](../deployment.md)
+
+## Docker
+
+Construir y ejecutar el backend:
+
+```bash
+docker build -t antoniotrinidad-backend .
+docker run --env-file .env.production -p 5000:5000 antoniotrinidad-backend
+```
+
+La imagen usa un usuario sin privilegios e incluye health check en `/api/health`.
 
 ## Endpoints principales
 
@@ -106,6 +124,7 @@ node --test
 server/
   docs/
     API.md
+    SECURITY.md
     TESTING.md
   src/
     config/
@@ -118,4 +137,5 @@ server/
     validators/
   test/
     api.test.js
+    env.test.js
 ```

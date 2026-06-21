@@ -5,14 +5,15 @@ import { asyncHandler } from '../middlewares/asyncHandler.js';
 
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
+  const normalizedEmail = email.trim().toLowerCase();
 
-  const user = await User.findOne({ email }).select('+passwordHash');
+  const user = await User.findOne({ email: normalizedEmail }).select('+passwordHash');
 
   if (!user || !(await user.comparePassword(password))) {
     throw new AppError('Invalid email or password', 401);
   }
 
-  user.passwordHash = undefined;
+  res.set('Cache-Control', 'no-store');
   sendToken(user, 200, res);
 });
 
@@ -24,6 +25,7 @@ export const logout = (req, res) => {
 };
 
 export const me = (req, res) => {
+  res.set('Cache-Control', 'no-store');
   res.status(200).json({
     status: 'success',
     data: {

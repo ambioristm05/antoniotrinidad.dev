@@ -10,13 +10,18 @@ import {
   updatePost,
 } from '../controllers/post.controller.js';
 import { protect, restrictTo } from '../middlewares/auth.js';
-import { validatePostCreate, validatePostUpdate } from '../validators/post.validators.js';
+import {
+  validateAdminPostQuery,
+  validatePostCreate,
+  validatePostUpdate,
+  validatePublicPostQuery,
+} from '../validators/post.validators.js';
 
 const router = Router();
 
-router.get('/', getPosts);
+router.get('/', validatePublicPostQuery, getPosts);
 router.get('/featured', getFeaturedPosts);
-router.get('/admin/all', protect, restrictTo('admin'), getAdminPosts);
+router.get('/admin/all', protect, restrictTo('admin'), validateAdminPostQuery, getAdminPosts);
 router.get('/:slug', getPostBySlug);
 
 router.use(protect, restrictTo('admin'));

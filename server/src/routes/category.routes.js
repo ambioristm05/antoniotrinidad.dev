@@ -7,11 +7,15 @@ import {
   updateCategory,
 } from '../controllers/category.controller.js';
 import { protect, restrictTo } from '../middlewares/auth.js';
-import { validateCategoryCreate, validateCategoryUpdate } from '../validators/category.validators.js';
+import {
+  validateCategoryCreate,
+  validateCategoryQuery,
+  validateCategoryUpdate,
+} from '../validators/category.validators.js';
 
 const router = Router();
 
-router.get('/', getCategories);
+router.get('/', validateCategoryQuery, getCategories);
 
 router.use(protect, restrictTo('admin'));
 

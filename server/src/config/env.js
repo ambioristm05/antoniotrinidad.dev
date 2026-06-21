@@ -2,21 +2,105 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-const requiredEnv = ['MONGODB_URI', 'JWT_SECRET'];
+const allowedNodeEnvs = ['development', 'test', 'production'];
 
-for (const key of requiredEnv) {
-  if (!process.env[key]) {
+const getRequiredEnv = (key) => {
+  const value = process.env[key]?.trim();
+
+  if (!value) {
     throw new Error(`Missing required environment variable: ${key}`);
   }
+
+  return value;
+};
+
+const nodeEnv = process.env.NODE_ENV?.trim() || 'development';
+
+if (!allowedNodeEnvs.includes(nodeEnv)) {
+  throw new Error(`NODE_ENV must be one of: ${allowedNodeEnvs.join(', ')}`);
+}
+
+const parsePort = () => {
+  const value = process.env.PORT?.trim() || '5000';
+  const port = Number(value);
+  const isTestPort = nodeEnv === 'test' && port === 0;
+
+  if (!Number.isInteger(port) || (!isTestPort && (port < 1 || port > 65535))) {
+    throw new Error('PORT must be an integer between 1 and 65535');
+  }
+
+  return port;
+};
+
+const validateClientUrl = (value) => {
+  try {
+    const url = new URL(value);
+
+    if (!['http:', 'https:'].includes(url.protocol)) {
+      throw new Error('Unsupported protocol');
+    }
+
+    return url.origin;
+  } catch {
+    throw new Error('CLIENT_URL must be a valid HTTP or HTTPS URL');
+  }
+};
+
+const parseTrustProxy = () => {
+  const value = process.env.TRUST_PROXY?.trim();
+
+  if (!value || value === '0' || value === 'false') return false;
+
+  const hops = Number(value);
+
+  if (!Number.isInteger(hops) || hops < 1) {
+    throw new Error('TRUST_PROXY must be false, 0 or a positive integer');
+  }
+
+  return hops;
+};
+
+const mongodbUri = getRequiredEnv('MONGODB_URI');
+const jwtSecret = getRequiredEnv('JWT_SECRET');
+const jwtExpiresIn = process.env.JWT_EXPIRES_IN?.trim() || '7d';
+const clientUrl = validateClientUrl(process.env.CLIENT_URL || 'http://localhost:5173');
+
+if (!/^mongodb(?:\+srv)?:\/\//.test(mongodbUri)) {
+  throw new Error('MONGODB_URI must start with mongodb:// or mongodb+srv://');
+}
+
+if (jwtSecret.length < 16) {
+  throw new Error('JWT_SECRET must contain at least 16 characters');
+}
+
+if (nodeEnv === 'production' && jwtSecret.length < 32) {
+  throw new Error('JWT_SECRET must contain at least 32 characters in production');
+}
+
+if (!/^\d+(?:ms|s|m|h|d|w|y)$/.test(jwtExpiresIn)) {
+  throw new Error('JWT_EXPIRES_IN must use a value such as 15m, 1h or 7d');
+}
+
+if (nodeEnv === 'production' && !clientUrl.startsWith('https://')) {
+  throw new Error('CLIENT_URL must use HTTPS in production');
+}
+
+if (process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD.length < 8) {
+  throw new Error('ADMIN_PASSWORD must contain at least 8 characters when configured');
+}
+
+if (nodeEnv === 'production' && process.env.ADMIN_PASSWORD && process.env.ADMIN_PASSWORD.length < 12) {
+  throw new Error('ADMIN_PASSWORD must contain at least 12 characters in production');
 }
 
 export const env = {
-  port: Number(process.env.PORT) || 5000,
-  nodeEnv: process.env.NODE_ENV || 'development',
-  mongodbUri: process.env.MONGODB_URI,
-  jwtSecret: process.env.JWT_SECRET,
-  jwtExpiresIn: process.env.JWT_EXPIRES_IN || '7d',
-  clientUrl: process.env.CLIENT_URL || 'http://localhost:5173',
+  port: parsePort(),
+  nodeEnv,
+  mongodbUri,
+  jwtSecret,
+  jwtExpiresIn,
+  clientUrl,
+  trustProxy: parseTrustProxy(),
   adminName: process.env.ADMIN_NAME || 'Admin',
   adminEmail: process.env.ADMIN_EMAIL,
   adminPassword: process.env.ADMIN_PASSWORD,

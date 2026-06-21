@@ -12,9 +12,12 @@ const projectSchema = new mongoose.Schema(
     },
     slug: {
       type: String,
+      required: [true, 'Project slug is required'],
       unique: true,
       lowercase: true,
       trim: true,
+      maxlength: [160, 'Project slug cannot exceed 160 characters'],
+      match: [/^[a-z0-9]+(?:-[a-z0-9]+)*$/, 'Project slug is invalid'],
     },
     summary: {
       type: String,
@@ -26,6 +29,7 @@ const projectSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Project description is required'],
       trim: true,
+      maxlength: [10000, 'Project description cannot exceed 10000 characters'],
     },
     coverImage: {
       type: String,
@@ -47,6 +51,8 @@ const projectSchema = new mongoose.Schema(
     category: {
       type: String,
       trim: true,
+      lowercase: true,
+      maxlength: [80, 'Project category cannot exceed 80 characters'],
       default: 'fullstack',
     },
     status: {
@@ -69,7 +75,15 @@ const projectSchema = new mongoose.Schema(
       default: '',
     },
     startDate: Date,
-    endDate: Date,
+    endDate: {
+      type: Date,
+      validate: {
+        validator(value) {
+          return !value || !this.startDate || value >= this.startDate;
+        },
+        message: 'Project end date cannot be before start date',
+      },
+    },
   },
   { timestamps: true },
 );
@@ -79,8 +93,18 @@ projectSchema.index({ featured: 1, createdAt: -1 });
 projectSchema.index({ category: 1 });
 
 projectSchema.pre('validate', function setSlug(next) {
-  if (!this.slug && this.title) {
+  if (this.isModified('slug') && this.slug) {
+    this.slug = slugify(this.slug);
+  } else if (!this.slug && this.title) {
     this.slug = slugify(this.title);
+  }
+
+  if (this.isModified('technologies')) {
+    this.technologies = [...new Set(this.technologies.map((item) => item.trim()).filter(Boolean))];
+  }
+
+  if (this.isModified('gallery')) {
+    this.gallery = [...new Set(this.gallery.map((item) => item.trim()).filter(Boolean))];
   }
 
   next();

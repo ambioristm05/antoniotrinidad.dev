@@ -1,32 +1,28 @@
-const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:5000/api';
+import { env } from '../config/env.js';
+import { clearAccessToken, getAccessToken } from './authToken.js';
+import { createHttpClient } from './httpClient.js';
 
-async function request(path, options = {}) {
-  const response = await fetch(`${API_URL}${path}`, {
-    headers: {
-      'Content-Type': 'application/json',
-      ...options.headers,
-    },
-    ...options,
-  });
-
-  if (!response.ok) {
-    const error = await response.json().catch(() => ({}));
-    throw new Error(error.message ?? 'No se pudo completar la solicitud.');
-  }
-
-  return response.json();
-}
+const http = createHttpClient({
+  baseUrl: env.apiUrl,
+  getAccessToken,
+  onUnauthorized: clearAccessToken,
+});
 
 export const api = {
-  getProjects: () => request('/projects'),
-  getFeaturedProjects: () => request('/projects/featured'),
-  getProject: (slug) => request(`/projects/${slug}`),
-  getPosts: () => request('/posts'),
-  getFeaturedPosts: () => request('/posts/featured'),
-  getPost: (slug) => request(`/posts/${slug}`),
-  sendMessage: (payload) =>
-    request('/contact', {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    }),
+  getHealth: () => http.get('/health'),
+  login: (credentials) => http.post('/auth/login', credentials),
+  logout: () => http.post('/auth/logout'),
+  getMe: () => http.get('/auth/me'),
+  getProjects: (query, options) => http.get('/projects', { ...options, query }),
+  getFeaturedProjects: () => http.get('/projects/featured'),
+  getProject: (slug) => http.get(`/projects/${encodeURIComponent(slug)}`),
+  getPosts: (query) => http.get('/posts', { query }),
+  getAdminPosts: (query, options) => http.get('/posts/admin/all', { ...options, query }),
+  getFeaturedPosts: () => http.get('/posts/featured'),
+  getPost: (slug) => http.get(`/posts/${encodeURIComponent(slug)}`),
+  getCategories: (query, options) => http.get('/categories', { ...options, query }),
+  sendMessage: (payload) => http.post('/contact', payload),
+  getMessages: (query, options) => http.get('/contact/messages', { ...options, query }),
 };
+
+export { ApiError, isApiError } from './httpClient.js';

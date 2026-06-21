@@ -3,6 +3,8 @@ import { AppError } from '../utils/AppError.js';
 import { buildQueryOptions, buildTextRegex } from '../utils/apiFeatures.js';
 import { pick } from '../utils/pick.js';
 import { asyncHandler } from '../middlewares/asyncHandler.js';
+import { slugify } from '../utils/slugify.js';
+import { postSortFields } from '../validators/post.validators.js';
 
 const postFields = [
   'title',
@@ -17,16 +19,19 @@ const postFields = [
   'publishedAt',
 ];
 
-const publicPostFilter = {
+const getPublicPostFilter = () => ({
   status: 'published',
-};
+  publishedAt: { $lte: new Date() },
+});
 
 export const getPosts = asyncHandler(async (req, res) => {
-  const { page, limit, skip, sort } = buildQueryOptions(req.query);
-  const filter = { ...publicPostFilter };
+  const { page, limit, skip, sort } = buildQueryOptions(req.query, {
+    allowedSortFields: postSortFields,
+  });
+  const filter = getPublicPostFilter();
 
-  if (req.query.category) filter.category = req.query.category;
-  if (req.query.tag) filter.tags = req.query.tag.toLowerCase();
+  if (req.query.category) filter.category = req.query.category.trim().toLowerCase();
+  if (req.query.tag) filter.tags = req.query.tag.trim().toLowerCase();
   if (req.query.featured) filter.featured = req.query.featured === 'true';
   if (req.query.search) {
     filter.$or = [
@@ -58,11 +63,15 @@ export const getPosts = asyncHandler(async (req, res) => {
 });
 
 export const getAdminPosts = asyncHandler(async (req, res) => {
-  const { page, limit, skip, sort } = buildQueryOptions(req.query);
+  const { page, limit, skip, sort } = buildQueryOptions(req.query, {
+    allowedSortFields: postSortFields,
+  });
   const filter = {};
 
   if (req.query.status) filter.status = req.query.status;
-  if (req.query.category) filter.category = req.query.category;
+  if (req.query.category) filter.category = req.query.category.trim().toLowerCase();
+  if (req.query.tag) filter.tags = req.query.tag.trim().toLowerCase();
+  if (req.query.featured) filter.featured = req.query.featured === 'true';
   if (req.query.search) {
     filter.$or = [
       { title: buildTextRegex(req.query.search) },
@@ -92,7 +101,7 @@ export const getAdminPosts = asyncHandler(async (req, res) => {
 });
 
 export const getFeaturedPosts = asyncHandler(async (req, res) => {
-  const posts = await Post.find({ ...publicPostFilter, featured: true })
+  const posts = await Post.find({ ...getPublicPostFilter(), featured: true })
     .populate('author', 'name avatar')
     .sort('-publishedAt')
     .limit(6);
@@ -108,8 +117,8 @@ export const getFeaturedPosts = asyncHandler(async (req, res) => {
 
 export const getPostBySlug = asyncHandler(async (req, res) => {
   const filter = {
-    slug: req.params.slug,
-    ...publicPostFilter,
+    slug: slugify(req.params.slug),
+    ...getPublicPostFilter(),
   };
   const post = await Post.findOne(filter).populate('author', 'name avatar');
 

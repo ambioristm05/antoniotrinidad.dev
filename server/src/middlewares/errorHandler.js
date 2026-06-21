@@ -10,9 +10,19 @@ const validationMessage = (error) =>
     .map((item) => item.message)
     .join('. ');
 
-export const errorHandler = (error, req, res, next) => {
-  let statusCode = error.statusCode || 500;
+export const errorHandler = (error, req, res, _next) => {
+  let statusCode = error.statusCode || error.status || 500;
   let message = error.message || 'Internal server error';
+
+  if (error.type === 'entity.too.large') {
+    statusCode = 413;
+    message = 'Request body cannot exceed 1mb';
+  }
+
+  if (error instanceof SyntaxError && error.status === 400 && 'body' in error) {
+    statusCode = 400;
+    message = 'Request body contains invalid JSON';
+  }
 
   if (error.name === 'CastError') {
     statusCode = 400;
@@ -32,6 +42,14 @@ export const errorHandler = (error, req, res, next) => {
   if (error.name === 'JsonWebTokenError' || error.name === 'TokenExpiredError') {
     statusCode = 401;
     message = 'Invalid or expired token';
+  }
+
+  if (statusCode >= 500) {
+    console.error('Unhandled request error:', error);
+
+    if (env.isProduction) {
+      message = 'Internal server error';
+    }
   }
 
   res.status(statusCode).json({

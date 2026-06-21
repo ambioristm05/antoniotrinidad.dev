@@ -2,6 +2,7 @@ import { Route, Routes } from 'react-router-dom';
 
 import PublicLayout from './layouts/PublicLayout.jsx';
 import AdminLayout from './layouts/AdminLayout.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 import AboutPage from './pages/AboutPage.jsx';
 import AdminCategoriesPage from './pages/AdminCategoriesPage.jsx';
 import AdminDashboardPage from './pages/AdminDashboardPage.jsx';
@@ -33,16 +34,18 @@ export default function App() {
       </Route>
 
       <Route path="admin/login" element={<AdminLoginPage />} />
-      <Route path="admin" element={<AdminLayout />}>
-        <Route index element={<AdminDashboardPage />} />
-        <Route path="projects" element={<AdminProjectsPage />} />
-        <Route path="projects/new" element={<AdminProjectsPage mode="new" />} />
-        <Route path="projects/:id/edit" element={<AdminProjectsPage mode="edit" />} />
-        <Route path="posts" element={<AdminPostsPage />} />
-        <Route path="posts/new" element={<AdminPostsPage mode="new" />} />
-        <Route path="posts/:id/edit" element={<AdminPostsPage mode="edit" />} />
-        <Route path="categories" element={<AdminCategoriesPage />} />
-        <Route path="messages" element={<AdminMessagesPage />} />
+      <Route element={<ProtectedRoute />}>
+        <Route path="admin" element={<AdminLayout />}>
+          <Route index element={<AdminDashboardPage />} />
+          <Route path="projects" element={<AdminProjectsPage />} />
+          <Route path="projects/new" element={<AdminProjectsPage mode="new" />} />
+          <Route path="projects/:id/edit" element={<AdminProjectsPage mode="edit" />} />
+          <Route path="posts" element={<AdminPostsPage />} />
+          <Route path="posts/new" element={<AdminPostsPage mode="new" />} />
+          <Route path="posts/:id/edit" element={<AdminPostsPage mode="edit" />} />
+          <Route path="categories" element={<AdminCategoriesPage />} />
+          <Route path="messages" element={<AdminMessagesPage />} />
+        </Route>
       </Route>
 
       <Route path="*" element={<NotFoundPage />} />

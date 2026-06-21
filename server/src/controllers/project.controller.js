@@ -3,6 +3,8 @@ import { AppError } from '../utils/AppError.js';
 import { buildQueryOptions, buildTextRegex } from '../utils/apiFeatures.js';
 import { pick } from '../utils/pick.js';
 import { asyncHandler } from '../middlewares/asyncHandler.js';
+import { slugify } from '../utils/slugify.js';
+import { projectSortFields } from '../validators/project.validators.js';
 
 const projectFields = [
   'title',
@@ -22,10 +24,12 @@ const projectFields = [
 ];
 
 export const getProjects = asyncHandler(async (req, res) => {
-  const { page, limit, skip, sort } = buildQueryOptions(req.query);
+  const { page, limit, skip, sort } = buildQueryOptions(req.query, {
+    allowedSortFields: projectSortFields,
+  });
   const filter = {};
 
-  if (req.query.category) filter.category = req.query.category;
+  if (req.query.category) filter.category = req.query.category.trim().toLowerCase();
   if (req.query.status) filter.status = req.query.status;
   if (req.query.featured) filter.featured = req.query.featured === 'true';
   if (req.query.search) {
@@ -70,7 +74,7 @@ export const getFeaturedProjects = asyncHandler(async (req, res) => {
 });
 
 export const getProjectBySlug = asyncHandler(async (req, res) => {
-  const project = await Project.findOne({ slug: req.params.slug });
+  const project = await Project.findOne({ slug: slugify(req.params.slug) });
 
   if (!project) {
     throw new AppError('Project not found', 404);

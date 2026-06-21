@@ -69,9 +69,9 @@ Configuracion:
 
 - Root directory: `server`
 - Runtime: Node
-- Build command: `pnpm install`
-- Start command: `pnpm start`
-- Health check path: usar `/api/health` si se agrega; si no existe, revisar logs del servicio.
+- Build command: `npm ci`
+- Start command: `npm start`
+- Health check path: `/api/health`.
 - Node.js: version 20 o superior.
 
 ### Base de datos
@@ -116,6 +116,7 @@ MONGODB_URI=
 JWT_SECRET=
 JWT_EXPIRES_IN=7d
 CLIENT_URL=https://antoniotrinidad.dev
+TRUST_PROXY=1
 ADMIN_NAME=Antonio Trinidad
 ADMIN_EMAIL=
 ADMIN_PASSWORD=
@@ -129,6 +130,7 @@ Notas:
 - `PORT` puede ser definido automaticamente por Render. Si Render lo inyecta, no hace falta fijarlo manualmente.
 - `JWT_SECRET` debe ser largo, aleatorio y privado.
 - `CLIENT_URL` debe coincidir exactamente con el dominio publico del frontend para que CORS funcione correctamente.
+- `TRUST_PROXY=1` permite obtener la IP real detras del proxy de Render para aplicar rate limiting correctamente.
 - `ADMIN_PASSWORD` solo debe usarse para crear el primer administrador; despues conviene rotarla o eliminarla si el script ya no se necesita.
 
 ### Frontend en Vercel
@@ -155,8 +157,9 @@ pnpm build
 
 ```bash
 cd server
-pnpm install
-pnpm check
+npm ci
+npm run check
+npm test
 ```
 
 2. Confirmar que el backend conecta con MongoDB Atlas usando `MONGODB_URI`.
@@ -184,8 +187,9 @@ pnpm check
 
 ```text
 Root Directory: server
-Build Command: pnpm install
-Start Command: pnpm start
+Build Command: npm ci
+Start Command: npm start
+Health Check Path: /api/health
 ```
 
 4. Agregar las variables de entorno del backend.
@@ -210,7 +214,7 @@ Cuando el backend ya tenga acceso a MongoDB Atlas, crear el primer usuario admin
 
 ```bash
 cd server
-pnpm create:admin
+npm run create:admin
 ```
 
 En produccion, este comando debe ejecutarse con estas variables disponibles:
@@ -367,7 +371,8 @@ pnpm build
 
 ```bash
 cd server
-pnpm check
+npm run check
+npm test
 ```
 
 4. Hacer merge a la rama principal.

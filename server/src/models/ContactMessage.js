@@ -13,6 +13,7 @@ const contactMessageSchema = new mongoose.Schema(
       required: [true, 'Email is required'],
       lowercase: true,
       trim: true,
+      maxlength: [254, 'Email cannot exceed 254 characters'],
       match: [/^\S+@\S+\.\S+$/, 'Email is invalid'],
     },
     subject: {
@@ -37,5 +38,7 @@ const contactMessageSchema = new mongoose.Schema(
 );
 
 contactMessageSchema.index({ status: 1, createdAt: -1 });
+contactMessageSchema.index({ email: 1, createdAt: -1 });
+contactMessageSchema.index({ subject: 1 });
 
 export const ContactMessage = mongoose.model('ContactMessage', contactMessageSchema);

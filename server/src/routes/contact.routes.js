@@ -8,7 +8,11 @@ import {
 } from '../controllers/contact.controller.js';
 import { protect, restrictTo } from '../middlewares/auth.js';
 import { contactLimiter } from '../middlewares/rateLimit.js';
-import { validateContactCreate, validateContactUpdate } from '../validators/contact.validators.js';
+import {
+  validateContactCreate,
+  validateContactQuery,
+  validateContactUpdate,
+} from '../validators/contact.validators.js';
 
 const router = Router();
 
@@ -16,7 +20,7 @@ router.post('/', contactLimiter, validateContactCreate, createContactMessage);
 
 router.use(protect, restrictTo('admin'));
 
-router.get('/messages', getContactMessages);
+router.get('/messages', validateContactQuery, getContactMessages);
 router.patch('/messages/:id', validateContactUpdate, updateContactMessage);
 router.delete('/messages/:id', deleteContactMessage);
 

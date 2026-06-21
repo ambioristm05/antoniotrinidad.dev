@@ -18,6 +18,8 @@ Authorization: Bearer <token>
 
 El token se obtiene con `POST /api/auth/login`.
 
+Los JWT se firman exclusivamente con `HS256`. El backend acepta temporalmente tokens anteriores que usen el claim `id`; los tokens nuevos identifican al usuario mediante el claim estandar `sub`.
+
 ### POST /api/auth/login
 
 Inicia sesion de administrador.
@@ -37,6 +39,8 @@ Respuesta `200`:
 {
   "status": "success",
   "token": "<jwt>",
+  "tokenType": "Bearer",
+  "expiresIn": "7d",
   "data": {
     "user": {
       "_id": "...",
@@ -53,9 +57,13 @@ Errores comunes:
 - `400` si faltan campos o el email no es valido.
 - `401` si las credenciales son incorrectas.
 
+La respuesta incluye `Cache-Control: no-store` y nunca expone `passwordHash`.
+
 ### POST /api/auth/logout
 
 Cierra sesion del lado del cliente. No requiere token.
+
+El logout es stateless: el cliente debe eliminar el JWT almacenado. El token no se guarda en cookies ni se mantiene una lista de revocacion en el servidor.
 
 Respuesta `200`:
 
@@ -92,12 +100,33 @@ Respuesta `200`:
 
 ### GET /api/health
 
+Comprueba que Express esta activo y ejecuta un `ping` real contra MongoDB. El chequeo de base tiene un timeout de 2 segundos.
+
 Respuesta `200`:
 
 ```json
 {
   "status": "success",
-  "message": "API is healthy"
+  "message": "API is healthy",
+  "services": {
+    "database": "connected"
+  },
+  "timestamp": "2026-06-20T12:00:00.000Z",
+  "uptime": 120
+}
+```
+
+Respuesta `503` cuando MongoDB no esta disponible:
+
+```json
+{
+  "status": "fail",
+  "message": "API is not ready",
+  "services": {
+    "database": "disconnected"
+  },
+  "timestamp": "2026-06-20T12:00:00.000Z",
+  "uptime": 120
 }
 ```
 
@@ -139,6 +168,8 @@ Query opcional:
 - `featured`: `true` o `false`
 - `search`
 - `page`, `limit`, `sort`
+
+`page` y `limit` deben ser enteros positivos; `limit` se limita a 50. Los campos permitidos para `sort` son `createdAt`, `updatedAt`, `title`, `startDate`, `endDate`, `featured` y `status`, con prefijo `-` para orden descendente. `search` admite hasta 100 caracteres y se trata como texto literal, no como expresion regular.
 
 Respuesta `200`:
 
@@ -197,13 +228,21 @@ Campos aceptados:
 - `liveUrl`, `repoUrl`
 - `startDate`, `endDate`
 
-Si no se envia `slug`, se genera desde `title`.
+Restricciones:
+
+- Si no se envia `slug`, se genera desde `title`; un slug enviado se normaliza.
+- `coverImage`, elementos de `gallery`, `liveUrl` y `repoUrl` deben usar HTTP o HTTPS.
+- `gallery` admite hasta 20 URLs y `technologies` hasta 30 textos no vacios.
+- `endDate` no puede ser anterior a `startDate`.
+- Tecnologias y URLs de galeria duplicadas se eliminan al guardar.
 
 ### PATCH /api/projects/:id
 
 Actualiza un proyecto por `_id`.
 
 Requiere rol `admin`.
+
+El body debe contener al menos un campo reconocido. El slug solo cambia cuando se envia expresamente; cambiar el titulo no rompe URLs existentes.
 
 ### DELETE /api/projects/:id
 
@@ -217,7 +256,7 @@ Respuesta `204` sin body.
 
 ### GET /api/posts
 
-Lista solo posts publicados.
+Lista solo posts publicados cuya fecha `publishedAt` ya haya llegado. Los borradores y posts programados para el futuro no aparecen.
 
 Query opcional:
 
@@ -226,6 +265,8 @@ Query opcional:
 - `featured`: `true` o `false`
 - `search`
 - `page`, `limit`, `sort`
+
+`page` y `limit` deben ser enteros positivos; `limit` se limita a 50. Los campos permitidos para `sort` son `createdAt`, `updatedAt`, `title`, `publishedAt`, `featured`, `status` y `readingTime`. `search` admite hasta 100 caracteres tratados como texto literal.
 
 ### GET /api/posts/featured
 
@@ -240,6 +281,8 @@ Devuelve un post publicado por `slug`.
 Lista posts publicados y borradores.
 
 Requiere rol `admin`.
+
+Admite `status`, `category`, `tag`, `featured`, `search`, `page`, `limit` y `sort`. A diferencia del listado publico, incluye posts programados.
 
 ### POST /api/posts
 
@@ -270,11 +313,23 @@ Campos aceptados:
 
 El backend asigna `author` desde el token. Si `status` es `published` y no se envia `publishedAt`, se usa la fecha actual.
 
+El campo `content` usa Markdown. El renderer del frontend debe mantener deshabilitado el HTML crudo o sanitizarlo antes de mostrarlo.
+
+Restricciones:
+
+- El slug se genera desde `title` cuando falta y se normaliza cuando se envia.
+- `coverImage` debe usar HTTP o HTTPS.
+- Se admiten hasta 20 tags no vacios; se normalizan a minusculas y se eliminan duplicados.
+- `readingTime` se calcula automaticamente a 200 palabras por minuto.
+- Un post publicado con fecha futura queda programado y no se muestra publicamente hasta esa fecha.
+
 ### PATCH /api/posts/:id
 
 Actualiza un post por `_id`.
 
 Requiere rol `admin`.
+
+El body debe contener al menos un campo reconocido. Volver un post a `draft` elimina `publishedAt`; publicarlo de nuevo asigna la fecha actual si no se envia otra.
 
 ### DELETE /api/posts/:id
 
@@ -294,6 +349,8 @@ Query opcional:
 
 - `type`: `project` o `post`
 
+Un tipo distinto devuelve `400`.
+
 ### POST /api/categories
 
 Crea una categoria.
@@ -311,11 +368,15 @@ Body:
 
 Si no se envia `slug`, se genera desde `name`.
 
+La combinacion `slug` + `type` es unica. El mismo slug puede existir una vez para proyectos y otra para posts.
+
 ### PATCH /api/categories/:id
 
 Actualiza una categoria por `_id`.
 
 Requiere rol `admin`.
+
+El body debe contener al menos un campo reconocido. Cambiar `name` no cambia el slug salvo que se envie `slug` expresamente.
 
 ### DELETE /api/categories/:id
 
@@ -347,19 +408,20 @@ Respuesta `201`:
 ```json
 {
   "status": "success",
-  "message": "Message received successfully",
-  "data": {
-    "contactMessage": {
-      "_id": "...",
-      "name": "Ada Lovelace",
-      "email": "ada@example.com",
-      "subject": "Project inquiry",
-      "message": "I would like to talk about a project.",
-      "status": "unread"
-    }
-  }
+  "message": "Message received successfully"
 }
 ```
+
+La respuesta publica no devuelve el mensaje ni datos personales. Enviar el mismo email, asunto y mensaje dentro de 15 minutos devuelve el mismo `201` sin crear un duplicado.
+
+Proteccion anti-spam:
+
+- Maximo de 5 solicitudes por IP cada hora.
+- Campo honeypot opcional `website`; el frontend debe mantenerlo oculto y vacio.
+- Si el honeypot contiene un valor, la API devuelve la misma respuesta generica pero no almacena el mensaje.
+- `name` requiere 2 caracteres, `subject` 3 y `message` 10.
+
+En despliegues detras de un proxy, configura `TRUST_PROXY` con el numero de saltos confiables (normalmente `1`) para que el limite use la IP real del visitante.
 
 ### GET /api/contact/messages
 
@@ -370,13 +432,18 @@ Requiere rol `admin`.
 Query opcional:
 
 - `status`: `unread`, `read`, `archived`
+- `search`: busca como texto literal en nombre, email, asunto y mensaje
 - `page`, `limit`, `sort`
+
+Los campos permitidos para `sort` son `createdAt`, `updatedAt`, `name`, `email`, `subject` y `status`.
 
 ### PATCH /api/contact/messages/:id
 
 Actualiza el estado de un mensaje.
 
 Requiere rol `admin`.
+
+El body debe incluir `status`; un body vacio devuelve `400`.
 
 Body:
 

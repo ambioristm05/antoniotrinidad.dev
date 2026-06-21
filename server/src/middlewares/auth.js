@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import mongoose from 'mongoose';
 
 import { env } from '../config/env.js';
 import { User } from '../models/User.js';
@@ -6,13 +7,10 @@ import { AppError } from '../utils/AppError.js';
 import { asyncHandler } from './asyncHandler.js';
 
 const getTokenFromRequest = (req) => {
-  const header = req.headers.authorization || '';
+  const header = req.headers.authorization?.trim() || '';
+  const match = header.match(/^Bearer\s+(.+)$/i);
 
-  if (header.startsWith('Bearer ')) {
-    return header.slice(7);
-  }
-
-  return null;
+  return match?.[1]?.trim() || null;
 };
 
 export const protect = asyncHandler(async (req, res, next) => {
@@ -22,8 +20,16 @@ export const protect = asyncHandler(async (req, res, next) => {
     throw new AppError('Authentication token is required', 401);
   }
 
-  const decoded = jwt.verify(token, env.jwtSecret);
-  const user = await User.findById(decoded.id);
+  const decoded = jwt.verify(token, env.jwtSecret, {
+    algorithms: ['HS256'],
+  });
+  const userId = decoded.sub || decoded.id;
+
+  if (!mongoose.isValidObjectId(userId)) {
+    throw new AppError('Invalid or expired token', 401);
+  }
+
+  const user = await User.findById(userId);
 
   if (!user) {
     throw new AppError('The user for this token no longer exists', 401);

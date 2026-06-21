@@ -34,7 +34,15 @@ const userSchema = new mongoose.Schema(
       default: '',
     },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: {
+      transform: (document, returnedObject) => {
+        delete returnedObject.passwordHash;
+        return returnedObject;
+      },
+    },
+  },
 );
 
 userSchema.pre('save', async function hashPassword(next) {

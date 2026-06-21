@@ -1,6 +1,6 @@
-import { connectDatabase } from '../config/database.js';
+import { connectDatabase, disconnectDatabase } from '../config/database.js';
 import { env } from '../config/env.js';
-import { User } from '../models/User.js';
+import { ensureAdmin } from '../services/admin.service.js';
 
 const createAdmin = async () => {
   if (!env.adminEmail || !env.adminPassword) {
@@ -9,25 +9,20 @@ const createAdmin = async () => {
 
   await connectDatabase();
 
-  const existingAdmin = await User.findOne({ email: env.adminEmail });
-
-  if (existingAdmin) {
-    console.log(`Admin already exists: ${env.adminEmail}`);
-    process.exit(0);
-  }
-
-  await User.create({
+  const { admin, created } = await ensureAdmin({
     name: env.adminName,
     email: env.adminEmail,
-    passwordHash: env.adminPassword,
-    role: 'admin',
+    password: env.adminPassword,
   });
 
-  console.log(`Admin created: ${env.adminEmail}`);
-  process.exit(0);
+  console.log(`${created ? 'Admin created' : 'Admin already exists'}: ${admin.email}`);
 };
 
-createAdmin().catch((error) => {
-  console.error(error.message);
-  process.exit(1);
-});
+createAdmin()
+  .catch((error) => {
+    console.error(error.message);
+    process.exitCode = 1;
+  })
+  .finally(async () => {
+    await disconnectDatabase();
+  });
