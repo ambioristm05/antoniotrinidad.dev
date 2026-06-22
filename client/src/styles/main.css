@@ -960,16 +960,34 @@ button:focus-visible {
   transition: transform 160ms ease, border-color 160ms ease;
 }
 
-.stack-icon-grid__item svg {
-  width: 36px;
-  height: 36px;
+.stack-icon {
+  display: grid;
+  width: 40px;
+  height: 40px;
+  place-items: center;
+}
+
+.stack-icon svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+}
+
+.stack-icon--html5,
+.stack-icon--css3,
+.stack-icon--javascript {
+  transform: scale(1.1);
+}
+
+.stack-icon--figma {
+  transform: scale(1.18);
 }
 
 .stack-icon-grid__item--html5 { color: #d94c28; }
 .stack-icon-grid__item--css3 { color: #126db2; }
 .stack-icon-grid__item--javascript { color: #9a7300; }
 .stack-icon-grid__item--figma { color: #a259ff; }
-.stack-icon-grid__item--github { color: var(--ink); }
+.stack-icon-grid__item--github { color: var(--brand-blue-light); }
 .stack-icon-grid__item--ai { color: var(--brand-green); }
 
 .stack-icon-grid__item:hover {
@@ -2493,9 +2511,9 @@ th {
     min-height: 64px;
   }
 
-  .stack-icon-grid__item svg {
-    width: 30px;
-    height: 30px;
+  .stack-icon {
+    width: 34px;
+    height: 34px;
   }
 }
 

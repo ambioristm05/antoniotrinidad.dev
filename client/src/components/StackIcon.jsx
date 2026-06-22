@@ -29,14 +29,19 @@ const lucideIcons = {
 };
 
 export default function StackIcon({ id }) {
-  if (id === 'github') return <GitHubMark />;
-  if (id === 'html5') return <ShieldMark label="5" />;
-  if (id === 'css3') return <ShieldMark label="3" />;
-  if (id === 'javascript') return <JavaScriptMark />;
-  if (id === 'figma') return <FigmaMark />;
+  let mark;
 
-  const Icon = lucideIcons[id] ?? FileCode2;
-  return <Icon aria-hidden="true" size={34} strokeWidth={1.8} />;
+  if (id === 'github') mark = <GitHubMark />;
+  else if (id === 'html5') mark = <ShieldMark label="5" />;
+  else if (id === 'css3') mark = <ShieldMark label="3" />;
+  else if (id === 'javascript') mark = <JavaScriptMark />;
+  else if (id === 'figma') mark = <FigmaMark />;
+  else {
+    const Icon = lucideIcons[id] ?? FileCode2;
+    mark = <Icon aria-hidden="true" strokeWidth={1.8} />;
+  }
+
+  return <span className={`stack-icon stack-icon--${id}`} aria-hidden="true">{mark}</span>;
 }
 
 function GitHubMark() {
