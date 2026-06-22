@@ -20,7 +20,7 @@ const { ContactMessage } = await import('../src/models/ContactMessage.js');
 const { Post } = await import('../src/models/Post.js');
 const { Project } = await import('../src/models/Project.js');
 const { User } = await import('../src/models/User.js');
-const { ensureAdmin } = await import('../src/services/admin.service.js');
+const { ensureAdmin, resetAdminPassword } = await import('../src/services/admin.service.js');
 const { signToken } = await import('../src/utils/sendToken.js');
 
 let server;
@@ -546,6 +546,24 @@ describe('Backend API', { concurrency: false }, () => {
     assert.equal(await User.countDocuments({ email: 'initial@example.com' }), 1);
     assert.equal(storedAdmin.name, 'Initial Admin');
     assert.equal(await storedAdmin.comparePassword('password123'), true);
+  });
+
+  it('resets the password of an existing admin', async () => {
+    await ensureAdmin({
+      name: 'Initial Admin',
+      email: 'initial@example.com',
+      password: 'password123',
+    });
+
+    await resetAdminPassword({
+      email: ' INITIAL@EXAMPLE.COM ',
+      password: 'new-password-456',
+    });
+
+    const storedAdmin = await User.findOne({ email: 'initial@example.com' }).select('+passwordHash');
+
+    assert.equal(await storedAdmin.comparePassword('password123'), false);
+    assert.equal(await storedAdmin.comparePassword('new-password-456'), true);
   });
 
   it('creates, updates, filters and deletes categories', async () => {

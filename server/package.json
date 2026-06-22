@@ -8,6 +8,7 @@
     "dev": "nodemon src/server.js",
     "start": "node src/server.js",
     "create:admin": "node src/scripts/createAdmin.js",
+    "reset:admin-password": "node src/scripts/resetAdminPassword.js",
     "check": "npm run lint && node --check src/server.js",
     "lint": "eslint .",
     "test": "node --test",

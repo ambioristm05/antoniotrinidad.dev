@@ -23,6 +23,8 @@ En produccion:
 - Guarda secretos solo en Render o el proveedor elegido.
 - Nunca subas `.env` al repositorio.
 - Elimina `ADMIN_PASSWORD` del entorno despues de crear el administrador.
+- Para rotar el password, configura `ADMIN_PASSWORD` temporalmente, ejecuta
+  `npm run reset:admin-password` y vuelve a eliminar la variable.
 - Rota `JWT_SECRET` si se sospecha exposicion; esto invalida todos los tokens existentes.
 - Usa un usuario MongoDB Atlas limitado a la base de esta aplicacion.
 

@@ -54,9 +54,14 @@ npm run test:coverage # tests con reporte de cobertura
 npm run lint         # ESLint
 npm run check        # lint y comprobacion de sintaxis
 npm run create:admin # crea el admin inicial si no existe
+npm run reset:admin-password # reemplaza el password del admin existente
 ```
 
 `create:admin` es idempotente: crea el usuario definido por `ADMIN_EMAIL` solo cuando no existe y nunca reemplaza su password automaticamente.
+
+Para restablecer el password, configura temporalmente `ADMIN_EMAIL` y
+`ADMIN_PASSWORD`, ejecuta `npm run reset:admin-password`, verifica el login y
+elimina `ADMIN_PASSWORD` de nuevo.
 
 Si `npm` no esta disponible, puedes usar Node directamente:
 
