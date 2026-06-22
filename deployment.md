@@ -115,7 +115,7 @@ PORT=10000
 MONGODB_URI=
 JWT_SECRET=
 JWT_EXPIRES_IN=7d
-CLIENT_URL=https://antoniotrinidad.dev
+CLIENT_URL=https://www.antoniotrinidad.dev
 TRUST_PROXY=1
 ADMIN_NAME=Antonio Trinidad
 ADMIN_EMAIL=
@@ -137,7 +137,7 @@ Notas:
 
 ```env
 VITE_API_URL=https://api.antoniotrinidad.dev/api
-VITE_SITE_URL=https://antoniotrinidad.dev
+VITE_SITE_URL=https://www.antoniotrinidad.dev
 ```
 
 Si no se usa subdominio para la API, usar la URL publica que Render entregue:
@@ -257,7 +257,7 @@ Output Directory: dist
 
 ```env
 VITE_API_URL=https://antoniotrinidad-api.onrender.com/api
-VITE_SITE_URL=https://antoniotrinidad.dev
+VITE_SITE_URL=https://www.antoniotrinidad.dev
 ```
 
 5. Desplegar.
@@ -306,14 +306,14 @@ Despues de conectar el dominio:
 - Actualizar `CLIENT_URL` en Render:
 
 ```env
-CLIENT_URL=https://antoniotrinidad.dev
+CLIENT_URL=https://www.antoniotrinidad.dev
 ```
 
 - Actualizar `VITE_API_URL` en Vercel:
 
 ```env
 VITE_API_URL=https://api.antoniotrinidad.dev/api
-VITE_SITE_URL=https://antoniotrinidad.dev
+VITE_SITE_URL=https://www.antoniotrinidad.dev
 ```
 
 - Redeplegar frontend y backend si las plataformas no lo hacen automaticamente.

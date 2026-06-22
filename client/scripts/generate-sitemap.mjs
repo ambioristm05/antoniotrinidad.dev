@@ -37,7 +37,7 @@ const fetchItems = async (url, collection) => {
 };
 
 const environment = await readEnvironment();
-const siteUrl = (environment.VITE_SITE_URL || 'https://antoniotrinidad.dev').replace(/\/+$/, '');
+const siteUrl = (environment.VITE_SITE_URL || 'https://www.antoniotrinidad.dev').replace(/\/+$/, '');
 const apiUrl = (environment.VITE_API_URL || 'http://localhost:5000/api').replace(/\/+$/, '');
 const entries = ['/', '/about', '/projects', '/blog', '/contact', '/privacy'].map((route) => toEntry(siteUrl, route));
 

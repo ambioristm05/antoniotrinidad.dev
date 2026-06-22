@@ -14,5 +14,5 @@ const normalizeUrl = (value, variableName) => {
 
 export const env = {
   apiUrl: normalizeUrl(import.meta.env?.VITE_API_URL || 'http://localhost:5000/api', 'VITE_API_URL'),
-  siteUrl: normalizeUrl(import.meta.env?.VITE_SITE_URL || 'https://antoniotrinidad.dev', 'VITE_SITE_URL'),
+  siteUrl: normalizeUrl(import.meta.env?.VITE_SITE_URL || 'https://www.antoniotrinidad.dev', 'VITE_SITE_URL'),
 };

@@ -17,6 +17,6 @@ services:
       - key: JWT_EXPIRES_IN
         value: 7d
       - key: CLIENT_URL
-        value: https://antoniotrinidad.dev
+        value: https://www.antoniotrinidad.dev
       - key: TRUST_PROXY
         value: "1"
