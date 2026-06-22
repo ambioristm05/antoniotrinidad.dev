@@ -10,9 +10,9 @@ export default function PostCard({ post }) {
 
   return (
     <article className="post-card">
-      {post.imageUrl ? (
+      {post.coverImage ? (
         <Link className="post-card__media" to={`/blog/${post.slug}`} aria-label={post.title}>
-          <img src={post.imageUrl} alt={post.imageAlt ?? ''} loading="lazy" />
+          <img src={post.coverImage} alt="" loading="lazy" />
         </Link>
       ) : null}
       <div className="post-card__body">
@@ -28,7 +28,7 @@ export default function PostCard({ post }) {
         </h3>
         <p>{post.excerpt}</p>
         <div className="tag-list" aria-label={blogPage.tagsLabel}>
-          {post.tags.map((tag) => (
+          {(post.tags ?? []).map((tag) => (
             <span key={tag}>{tag}</span>
           ))}
         </div>

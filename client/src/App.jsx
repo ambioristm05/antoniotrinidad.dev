@@ -1,54 +1,62 @@
+import { lazy, Suspense } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
-import PublicLayout from './layouts/PublicLayout.jsx';
-import AdminLayout from './layouts/AdminLayout.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
-import AboutPage from './pages/AboutPage.jsx';
-import AdminCategoriesPage from './pages/AdminCategoriesPage.jsx';
-import AdminDashboardPage from './pages/AdminDashboardPage.jsx';
-import AdminLoginPage from './pages/AdminLoginPage.jsx';
-import AdminMessagesPage from './pages/AdminMessagesPage.jsx';
-import AdminPostsPage from './pages/AdminPostsPage.jsx';
-import AdminProjectsPage from './pages/AdminProjectsPage.jsx';
-import BlogPage from './pages/BlogPage.jsx';
-import ContactPage from './pages/ContactPage.jsx';
+import PublicLayout from './layouts/PublicLayout.jsx';
 import HomePage from './pages/HomePage.jsx';
-import NotFoundPage from './pages/NotFoundPage.jsx';
-import PostDetailPage from './pages/PostDetailPage.jsx';
-import PrivacyPage from './pages/PrivacyPage.jsx';
-import ProjectDetailPage from './pages/ProjectDetailPage.jsx';
-import ProjectsPage from './pages/ProjectsPage.jsx';
+
+const AboutPage = lazy(() => import('./pages/AboutPage.jsx'));
+const AdminCategoriesPage = lazy(() => import('./pages/AdminCategoriesPage.jsx'));
+const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage.jsx'));
+const AdminLayout = lazy(() => import('./layouts/AdminLayout.jsx'));
+const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage.jsx'));
+const AdminMessagesPage = lazy(() => import('./pages/AdminMessagesPage.jsx'));
+const AdminPostsPage = lazy(() => import('./pages/AdminPostsPage.jsx'));
+const AdminProjectsPage = lazy(() => import('./pages/AdminProjectsPage.jsx'));
+const BlogPage = lazy(() => import('./pages/BlogPage.jsx'));
+const ContactPage = lazy(() => import('./pages/ContactPage.jsx'));
+const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'));
+const PostDetailPage = lazy(() => import('./pages/PostDetailPage.jsx'));
+const PrivacyPage = lazy(() => import('./pages/PrivacyPage.jsx'));
+const ProjectDetailPage = lazy(() => import('./pages/ProjectDetailPage.jsx'));
+const ProjectsPage = lazy(() => import('./pages/ProjectsPage.jsx'));
+
+const routeElement = (Component, props) => (
+  <Suspense fallback={<div className="route-loading" aria-busy="true" aria-label="Cargando" role="status" />}>
+    <Component {...props} />
+  </Suspense>
+);
 
 export default function App() {
   return (
     <Routes>
       <Route element={<PublicLayout />}>
         <Route index element={<HomePage />} />
-        <Route path="about" element={<AboutPage />} />
-        <Route path="projects" element={<ProjectsPage />} />
-        <Route path="projects/:slug" element={<ProjectDetailPage />} />
-        <Route path="blog" element={<BlogPage />} />
-        <Route path="blog/:slug" element={<PostDetailPage />} />
-        <Route path="contact" element={<ContactPage />} />
-        <Route path="privacy" element={<PrivacyPage />} />
+        <Route path="about" element={routeElement(AboutPage)} />
+        <Route path="projects" element={routeElement(ProjectsPage)} />
+        <Route path="projects/:slug" element={routeElement(ProjectDetailPage)} />
+        <Route path="blog" element={routeElement(BlogPage)} />
+        <Route path="blog/:slug" element={routeElement(PostDetailPage)} />
+        <Route path="contact" element={routeElement(ContactPage)} />
+        <Route path="privacy" element={routeElement(PrivacyPage)} />
       </Route>
 
-      <Route path="admin/login" element={<AdminLoginPage />} />
+      <Route path="admin/login" element={routeElement(AdminLoginPage)} />
       <Route element={<ProtectedRoute />}>
-        <Route path="admin" element={<AdminLayout />}>
-          <Route index element={<AdminDashboardPage />} />
-          <Route path="projects" element={<AdminProjectsPage />} />
-          <Route path="projects/new" element={<AdminProjectsPage mode="new" />} />
-          <Route path="projects/:id/edit" element={<AdminProjectsPage mode="edit" />} />
-          <Route path="posts" element={<AdminPostsPage />} />
-          <Route path="posts/new" element={<AdminPostsPage mode="new" />} />
-          <Route path="posts/:id/edit" element={<AdminPostsPage mode="edit" />} />
-          <Route path="categories" element={<AdminCategoriesPage />} />
-          <Route path="messages" element={<AdminMessagesPage />} />
+        <Route path="admin" element={routeElement(AdminLayout)}>
+          <Route index element={routeElement(AdminDashboardPage)} />
+          <Route path="projects" element={routeElement(AdminProjectsPage)} />
+          <Route path="projects/new" element={routeElement(AdminProjectsPage, { mode: 'new' })} />
+          <Route path="projects/:id/edit" element={routeElement(AdminProjectsPage, { mode: 'edit' })} />
+          <Route path="posts" element={routeElement(AdminPostsPage)} />
+          <Route path="posts/new" element={routeElement(AdminPostsPage, { mode: 'new' })} />
+          <Route path="posts/:id/edit" element={routeElement(AdminPostsPage, { mode: 'edit' })} />
+          <Route path="categories" element={routeElement(AdminCategoriesPage)} />
+          <Route path="messages" element={routeElement(AdminMessagesPage)} />
         </Route>
       </Route>
 
-      <Route path="*" element={<NotFoundPage />} />
+      <Route path="*" element={routeElement(NotFoundPage)} />
     </Routes>
   );
 }

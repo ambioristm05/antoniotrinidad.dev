@@ -1,64 +1,72 @@
 import { Link, useParams } from 'react-router-dom';
 
+import ContentFeedback from '../components/ContentFeedback.jsx';
+import { useApiResource } from '../hooks/useApiResource.js';
 import { useSiteContent } from '../hooks/useSiteContent.js';
-import { findBySlug } from '../utils/formatters.js';
+import { usePageMetadata } from '../hooks/usePageMetadata.js';
+import { api } from '../services/api.js';
+import { formatDate } from '../utils/formatters.js';
 import NotFoundPage from './NotFoundPage.jsx';
 
 export default function ProjectDetailPage() {
   const { slug } = useParams();
-  const { projects, projectsPage } = useSiteContent();
-  const project = findBySlug(projects, slug);
+  const { meta, projectsPage } = useSiteContent();
+  const { data: project, error, retry, status } = useApiResource(({ signal }) =>
+    api.getProject(slug, { signal }).then((response) => response.data.project), slug);
+  const copy = meta.code === 'es'
+    ? { loading: 'Cargando proyecto...', error: 'No se pudo cargar el proyecto.', retry: 'Reintentar', about: 'Sobre el proyecto', dates: 'Periodo', gallery: 'Galería' }
+    : { loading: 'Loading project...', error: 'The project could not be loaded.', retry: 'Retry', about: 'About the project', dates: 'Timeline', gallery: 'Gallery' };
+  usePageMetadata({
+    title: project?.title ?? projectsPage.eyebrow,
+    description: project?.summary ?? projectsPage.description,
+    path: `/projects/${slug}`,
+    image: project?.coverImage,
+    type: project ? 'article' : 'website',
+    structuredData: project ? {
+      '@context': 'https://schema.org',
+      '@type': 'CreativeWork',
+      name: project.title,
+      description: project.summary,
+      url: undefined,
+      image: project.coverImage || undefined,
+      dateCreated: project.startDate || project.createdAt,
+    } : undefined,
+  });
 
-  if (!project) {
-    return <NotFoundPage />;
-  }
+  if (status === 'error' && error?.status === 404) return <NotFoundPage />;
+  if (status !== 'success') return <section className="page-section"><ContentFeedback copy={copy} error={error} loading={status === 'loading'} onRetry={retry} /></section>;
 
   return (
     <article className="page-section detail-page">
-      <Link className="text-link" to="/projects">
-        {projectsPage.back}
-      </Link>
+      <Link className="text-link" to="/projects">{projectsPage.back}</Link>
+      {project.coverImage && <figure className="project-detail-cover"><img src={project.coverImage} alt="" /></figure>}
       <div className="detail-hero">
         <div>
           <p className="eyebrow">{project.category}</p>
           <h1>{project.title}</h1>
-          <p>{project.description}</p>
+          <p>{project.summary}</p>
         </div>
         <div className="detail-panel">
           <span className="status">{project.status}</span>
-          <div className="tag-list">
-            {project.technologies.map((technology) => (
-              <span key={technology}>{technology}</span>
-            ))}
-          </div>
+          <div className="tag-list">{(project.technologies ?? []).map((technology) => <span key={technology}>{technology}</span>)}</div>
         </div>
       </div>
-      <div className="detail-grid">
-        <section>
-          <h2>{projectsPage.challenge}</h2>
-          <p>{project.challenge}</p>
-        </section>
-        <section>
-          <h2>{projectsPage.solution}</h2>
-          <p>{project.solution}</p>
-        </section>
-        <section>
-          <h2>{projectsPage.results}</h2>
-          <ul className="clean-list">
-            {project.results.map((result) => (
-              <li key={result}>{result}</li>
-            ))}
-          </ul>
-        </section>
+      <div className="project-description">
+        <h2>{copy.about}</h2>
+        <p>{project.description}</p>
       </div>
-      <div className="hero-actions">
-        <a className="button button--primary" href={project.liveUrl} target="_blank" rel="noreferrer">
-          {projectsPage.demo}
-        </a>
-        <a className="button button--secondary" href={project.repoUrl} target="_blank" rel="noreferrer">
-          {projectsPage.code}
-        </a>
-      </div>
+      {(project.startDate || project.endDate) && (
+        <section className="project-dates"><h2>{copy.dates}</h2><p>{project.startDate ? formatDate(project.startDate, meta.dateLocale) : '—'} – {project.endDate ? formatDate(project.endDate, meta.dateLocale) : '—'}</p></section>
+      )}
+      {(project.gallery ?? []).length > 0 && (
+        <section><h2>{copy.gallery}</h2><div className="project-gallery">{project.gallery.map((image) => <img alt="" key={image} loading="lazy" src={image} />)}</div></section>
+      )}
+      {(project.liveUrl || project.repoUrl) && (
+        <div className="hero-actions">
+          {project.liveUrl && <a className="button button--primary" href={project.liveUrl} target="_blank" rel="noreferrer">{projectsPage.demo}</a>}
+          {project.repoUrl && <a className="button button--secondary" href={project.repoUrl} target="_blank" rel="noreferrer">{projectsPage.code}</a>}
+        </div>
+      )}
     </article>
   );
 }

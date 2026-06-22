@@ -1,13 +1,16 @@
 import ContactForm from '../components/ContactForm.jsx';
 import SectionHeader from '../components/SectionHeader.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
+import { usePageMetadata } from '../hooks/usePageMetadata.js';
 
 export default function ContactPage() {
   const { contact, profile } = useSiteContent();
+  usePageMetadata({ title: contact.eyebrow, description: contact.description, path: '/contact' });
 
   return (
     <section className="page-section">
       <SectionHeader
+        as="h1"
         eyebrow={contact.eyebrow}
         title={contact.title}
         description={contact.description}

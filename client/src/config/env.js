@@ -1,4 +1,4 @@
-const normalizeApiUrl = (value) => {
+const normalizeUrl = (value, variableName) => {
   try {
     const url = new URL(value);
 
@@ -8,10 +8,11 @@ const normalizeApiUrl = (value) => {
 
     return value.replace(/\/+$/, '');
   } catch {
-    throw new Error('VITE_API_URL must be a valid HTTP or HTTPS URL');
+    throw new Error(`${variableName} must be a valid HTTP or HTTPS URL`);
   }
 };
 
 export const env = {
-  apiUrl: normalizeApiUrl(import.meta.env?.VITE_API_URL || 'http://localhost:5000/api'),
+  apiUrl: normalizeUrl(import.meta.env?.VITE_API_URL || 'http://localhost:5000/api', 'VITE_API_URL'),
+  siteUrl: normalizeUrl(import.meta.env?.VITE_SITE_URL || 'https://antoniotrinidad.dev', 'VITE_SITE_URL'),
 };

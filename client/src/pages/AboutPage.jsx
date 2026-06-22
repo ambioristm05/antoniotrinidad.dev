@@ -1,12 +1,15 @@
 import SectionHeader from '../components/SectionHeader.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
+import { usePageMetadata } from '../hooks/usePageMetadata.js';
 
 export default function AboutPage() {
   const { about, skills, timeline } = useSiteContent();
+  usePageMetadata({ title: about.eyebrow, description: about.description, path: '/about' });
 
   return (
     <section className="page-section">
       <SectionHeader
+        as="h1"
         eyebrow={about.eyebrow}
         title={about.title}
         description={about.description}

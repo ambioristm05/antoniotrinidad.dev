@@ -2,15 +2,18 @@ import { Link } from 'react-router-dom';
 
 import SectionHeader from '../components/SectionHeader.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
+import { usePageMetadata } from '../hooks/usePageMetadata.js';
 
 const siteName = 'antoniotrinidad.dev';
 
 export default function PrivacyPage() {
   const { privacy } = useSiteContent();
+  usePageMetadata({ title: privacy.title, description: privacy.description, path: '/privacy' });
 
   return (
     <section className="page-section article-page">
       <SectionHeader
+        as="h1"
         eyebrow={privacy.eyebrow}
         title={privacy.title}
         description={linkSiteName(privacy.description)}

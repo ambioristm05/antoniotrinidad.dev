@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import BrandLogo from '../components/BrandLogo.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
+import { usePageMetadata } from '../hooks/usePageMetadata.js';
 
 export default function AdminLoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -13,6 +14,7 @@ export default function AdminLoginPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const destination = location.state?.from?.pathname || '/admin';
+  usePageMetadata({ title: 'Admin', description: 'Acceso administrativo privado.', path: '/admin/login', noIndex: true });
   const labels =
     meta.code === 'es'
       ? {
@@ -60,7 +62,7 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <main className="auth-page">
+    <main className="auth-page" tabIndex="-1">
       <section className="auth-panel">
         <BrandLogo />
         <div>

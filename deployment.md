@@ -137,6 +137,7 @@ Notas:
 
 ```env
 VITE_API_URL=https://api.antoniotrinidad.dev/api
+VITE_SITE_URL=https://antoniotrinidad.dev
 ```
 
 Si no se usa subdominio para la API, usar la URL publica que Render entregue:
@@ -250,6 +251,7 @@ Output Directory: dist
 
 ```env
 VITE_API_URL=https://antoniotrinidad-api.onrender.com/api
+VITE_SITE_URL=https://antoniotrinidad.dev
 ```
 
 5. Desplegar.
@@ -305,6 +307,7 @@ CLIENT_URL=https://antoniotrinidad.dev
 
 ```env
 VITE_API_URL=https://api.antoniotrinidad.dev/api
+VITE_SITE_URL=https://antoniotrinidad.dev
 ```
 
 - Redeplegar frontend y backend si las plataformas no lo hacen automaticamente.

@@ -1,54 +1,74 @@
 import { useState } from 'react';
 
+import { usePreferences } from '../contexts/PreferencesContext.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
-
-const initialForm = { name: '', email: '', subject: '', message: '' };
+import { api } from '../services/api.js';
+import { contactFormToPayload, emptyContactForm } from '../services/contactForm.js';
 
 export default function ContactForm() {
-  const [form, setForm] = useState(initialForm);
+  const [form, setForm] = useState(emptyContactForm);
   const [status, setStatus] = useState('idle');
+  const [error, setError] = useState('');
+  const { language } = usePreferences();
   const { contact } = useSiteContent();
   const labels = contact.form;
+  const copy = language === 'es'
+    ? { sent: 'Tu mensaje fue enviado correctamente.', error: 'No se pudo enviar el mensaje. Inténtalo de nuevo.', website: 'Sitio web' }
+    : { sent: 'Your message was sent successfully.', error: 'The message could not be sent. Please try again.', website: 'Website' };
 
-  function handleChange(event) {
-    setForm((currentForm) => ({ ...currentForm, [event.target.name]: event.target.value }));
-  }
+  const handleChange = ({ target }) => {
+    setForm((current) => ({ ...current, [target.name]: target.value }));
+    if (status !== 'sending') {
+      setStatus('idle');
+      setError('');
+    }
+  };
 
-  function handleSubmit(event) {
+  const handleSubmit = async (event) => {
     event.preventDefault();
     setStatus('sending');
+    setError('');
 
-    window.setTimeout(() => {
+    try {
+      await api.sendMessage(contactFormToPayload(form));
+      setForm(emptyContactForm);
       setStatus('sent');
-      setForm(initialForm);
-    }, 450);
-  }
+    } catch (requestError) {
+      setError(requestError.message || copy.error);
+      setStatus('error');
+    }
+  };
 
   return (
     <form className="contact-form" onSubmit={handleSubmit}>
+      <div className="contact-honeypot" aria-hidden="true">
+        <label htmlFor="contact-website">{copy.website}</label>
+        <input autoComplete="off" id="contact-website" name="website" onChange={handleChange} tabIndex="-1" value={form.website} />
+      </div>
       <div className="form-grid">
         <label>
           {labels.name}
-          <input name="name" value={form.name} onChange={handleChange} minLength="2" required placeholder={labels.namePlaceholder} />
+          <input autoComplete="name" maxLength="100" minLength="2" name="name" onChange={handleChange} placeholder={labels.namePlaceholder} required value={form.name} />
         </label>
         <label>
           {labels.email}
-          <input name="email" type="email" value={form.email} onChange={handleChange} required placeholder={labels.emailPlaceholder} />
+          <input autoComplete="email" maxLength="254" name="email" onChange={handleChange} placeholder={labels.emailPlaceholder} required type="email" value={form.email} />
         </label>
       </div>
       <label>
         {labels.subject}
-        <input name="subject" value={form.subject} onChange={handleChange} minLength="4" required placeholder={labels.subjectPlaceholder} />
+        <input maxLength="160" minLength="3" name="subject" onChange={handleChange} placeholder={labels.subjectPlaceholder} required value={form.subject} />
       </label>
       <label>
         {labels.message}
-        <textarea name="message" value={form.message} onChange={handleChange} minLength="20" required rows="3" placeholder={labels.messagePlaceholder} />
+        <textarea maxLength="3000" minLength="10" name="message" onChange={handleChange} placeholder={labels.messagePlaceholder} required rows="5" value={form.message} />
       </label>
-      <div className="form-actions">
-        <button className="button button--primary" type="submit" disabled={status === 'sending'}>
+      <div className="form-actions contact-form__actions">
+        <button className="button button--primary" disabled={status === 'sending'} type="submit">
           {status === 'sending' ? labels.sending : labels.send}
         </button>
-        {status === 'sent' ? <p className="form-success">{labels.sent}</p> : null}
+        {status === 'sent' && <p className="form-success" role="status">{copy.sent}</p>}
+        {status === 'error' && <p className="form-error" role="alert">{error}</p>}
       </div>
     </form>
   );

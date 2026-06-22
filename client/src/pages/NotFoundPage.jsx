@@ -2,9 +2,11 @@ import { useEffect } from 'react';
 import { Link } from 'react-router-dom';
 
 import { useSiteContent } from '../hooks/useSiteContent.js';
+import { usePageMetadata } from '../hooks/usePageMetadata.js';
 
 export default function NotFoundPage() {
   const { notFound } = useSiteContent();
+  usePageMetadata({ title: '404', description: notFound.description, path: window.location.pathname, noIndex: true });
 
   useEffect(() => {
     document.body.dataset.hideFooter = 'true';

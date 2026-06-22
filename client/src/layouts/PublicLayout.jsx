@@ -43,6 +43,9 @@ export default function PublicLayout() {
 
   return (
     <div className="site-shell">
+      <a className="skip-link" href="#main-content">
+        {language === 'es' ? 'Saltar al contenido' : 'Skip to content'}
+      </a>
       <header className="site-header">
         <BrandLogo />
         <nav id="mobile-navigation" className={`site-nav${isMenuOpen ? ' site-nav--open' : ''}`} aria-label={nav.aria}>
@@ -94,7 +97,7 @@ export default function PublicLayout() {
         </div>
       </header>
 
-      <main>
+      <main id="main-content" tabIndex="-1">
         <Outlet />
       </main>
 

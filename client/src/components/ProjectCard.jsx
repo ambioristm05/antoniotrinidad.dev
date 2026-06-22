@@ -7,9 +7,9 @@ export default function ProjectCard({ project }) {
 
   return (
     <article className="project-card">
-      {project.imageUrl ? (
+      {project.coverImage ? (
         <Link className="project-card__media" to={`/projects/${project.slug}`} aria-label={project.title}>
-          <img src={project.imageUrl} alt={project.imageAlt ?? ''} loading="lazy" />
+          <img src={project.coverImage} alt="" loading="lazy" />
         </Link>
       ) : null}
       <div className="project-card__body">
@@ -18,18 +18,16 @@ export default function ProjectCard({ project }) {
         </h3>
         <p>{project.summary}</p>
         <div className="tag-list" aria-label={projectsPage.technologiesLabel}>
-          {project.technologies.map((technology) => (
+          {(project.technologies ?? []).map((technology) => (
             <span key={technology}>{technology}</span>
           ))}
         </div>
-        <div className="project-card__actions">
-          <a className="button button--primary button--small" href={project.liveUrl} target="_blank" rel="noreferrer">
-            {projectsPage.demo}
-          </a>
-          <a className="button button--secondary button--small" href={project.repoUrl} target="_blank" rel="noreferrer">
-            {projectsPage.code}
-          </a>
-        </div>
+        {(project.liveUrl || project.repoUrl) && (
+          <div className="project-card__actions">
+            {project.liveUrl && <a className="button button--primary button--small" href={project.liveUrl} target="_blank" rel="noreferrer">{projectsPage.demo}</a>}
+            {project.repoUrl && <a className="button button--secondary button--small" href={project.repoUrl} target="_blank" rel="noreferrer">{projectsPage.code}</a>}
+          </div>
+        )}
       </div>
     </article>
   );

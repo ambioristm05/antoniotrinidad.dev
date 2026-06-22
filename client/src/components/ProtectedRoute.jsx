@@ -10,7 +10,7 @@ export default function ProtectedRoute() {
 
   if (status === 'checking') {
     return (
-      <main className="auth-page">
+      <main className="auth-page" tabIndex="-1">
         <section className="auth-panel" aria-live="polite">
           <p>{meta.code === 'es' ? 'Verificando sesion...' : 'Checking session...'}</p>
         </section>

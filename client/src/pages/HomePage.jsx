@@ -3,12 +3,38 @@ import { Link } from 'react-router-dom';
 import PostCard from '../components/PostCard.jsx';
 import ProjectCard from '../components/ProjectCard.jsx';
 import SectionHeader from '../components/SectionHeader.jsx';
+import ContentFeedback from '../components/ContentFeedback.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
+import { useApiResource } from '../hooks/useApiResource.js';
+import { usePageMetadata } from '../hooks/usePageMetadata.js';
+import { api } from '../services/api.js';
+import { env } from '../config/env.js';
 
 export default function HomePage() {
-  const { home, posts, profile, projects, skills } = useSiteContent();
-  const featuredProjects = projects.filter((project) => project.featured).slice(0, 3);
-  const featuredPosts = posts.filter((post) => post.featured).slice(0, 3);
+  const { home, meta, profile, skills } = useSiteContent();
+  const { data, error, retry, status } = useApiResource(({ signal }) =>
+    Promise.all([api.getFeaturedProjects({ signal }), api.getFeaturedPosts({ signal })]).then(([projects, posts]) => ({
+      projects: projects.data.projects.slice(0, 4),
+      posts: posts.data.posts.slice(0, 3),
+    })),
+  );
+  const featuredProjects = data?.projects ?? [];
+  const featuredPosts = data?.posts ?? [];
+  const feedbackCopy = meta.code === 'es'
+    ? { loading: 'Cargando contenido...', error: 'No se pudo cargar el contenido destacado.', retry: 'Reintentar', noProjects: 'Todavía no hay proyectos destacados.', noPosts: 'Todavía no hay artículos destacados.' }
+    : { loading: 'Loading content...', error: 'Featured content could not be loaded.', retry: 'Retry', noProjects: 'There are no featured projects yet.', noPosts: 'There are no featured articles yet.' };
+  usePageMetadata({
+    description: profile.tagline,
+    path: '/',
+    structuredData: {
+      '@context': 'https://schema.org',
+      '@type': 'Person',
+      name: profile.name,
+      url: env.siteUrl,
+      jobTitle: profile.role,
+      email: profile.email,
+    },
+  });
 
   return (
     <>
@@ -57,11 +83,15 @@ export default function HomePage() {
           title={home.featuredProjects.title}
           description={home.featuredProjects.description}
         />
-        <div className="card-grid card-grid--four card-grid--projects">
-          {featuredProjects.map((project) => (
-            <ProjectCard key={project.id} project={project} />
-          ))}
-        </div>
+        {status === 'loading' || status === 'error' ? (
+          <ContentFeedback copy={feedbackCopy} error={error} loading={status === 'loading'} onRetry={retry} />
+        ) : featuredProjects.length === 0 ? (
+          <p className="content-feedback">{feedbackCopy.noProjects}</p>
+        ) : (
+          <div className="card-grid card-grid--four card-grid--projects">
+            {featuredProjects.map((project) => <ProjectCard key={project._id} project={project} />)}
+          </div>
+        )}
       </section>
 
       <section className="content-section content-section--muted">
@@ -83,11 +113,15 @@ export default function HomePage() {
           title={home.blog.title}
           description={home.blog.description}
         />
-        <div className="card-grid card-grid--three">
-          {featuredPosts.map((post) => (
-            <PostCard key={post.id} post={post} />
-          ))}
-        </div>
+        {status === 'loading' || status === 'error' ? (
+          <ContentFeedback copy={feedbackCopy} error={error} loading={status === 'loading'} onRetry={retry} />
+        ) : featuredPosts.length === 0 ? (
+          <p className="content-feedback">{feedbackCopy.noPosts}</p>
+        ) : (
+          <div className="card-grid card-grid--three">
+            {featuredPosts.map((post) => <PostCard key={post._id} post={post} />)}
+          </div>
+        )}
       </section>
     </>
   );

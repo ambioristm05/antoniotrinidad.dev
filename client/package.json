@@ -6,7 +6,10 @@
   "packageManager": "pnpm@9.15.4",
   "scripts": {
     "dev": "vite",
+    "sitemap": "node scripts/generate-sitemap.mjs",
+    "prebuild": "node scripts/generate-sitemap.mjs",
     "build": "vite build",
+    "postbuild": "node scripts/check-bundle.mjs",
     "preview": "vite preview",
     "check": "node --check vite.config.js && node --test",
     "test": "node --test"
@@ -16,7 +19,9 @@
     "lucide-react": "^1.20.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-markdown": "^10.1.0",
     "react-router-dom": "^7.1.1",
+    "remark-gfm": "^4.0.1",
     "vite": "^6.0.7"
   }
 }
