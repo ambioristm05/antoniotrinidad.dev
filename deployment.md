@@ -182,9 +182,14 @@ npm test
 
 ## 5. Despliegue del backend en Render
 
-1. Crear un nuevo Web Service en Render.
+El repositorio incluye `render.yaml`, por lo que la opcion recomendada es crear un
+Blueprint en Render y seleccionar este repositorio. Render cargara automaticamente
+la configuracion del servicio y solicitara los valores secretos marcados con
+`sync: false`.
+
+1. Crear un nuevo Blueprint en Render.
 2. Conectar el repositorio del proyecto.
-3. Configurar:
+3. Confirmar la configuracion detectada:
 
 ```text
 Root Directory: server
@@ -193,7 +198,8 @@ Start Command: npm start
 Health Check Path: /api/health
 ```
 
-4. Agregar las variables de entorno del backend.
+4. Completar `MONGODB_URI` y `JWT_SECRET` cuando Render los solicite. No guardar
+   estos valores en `render.yaml` ni en Git.
 5. Desplegar el servicio.
 6. Revisar logs para confirmar:
 
