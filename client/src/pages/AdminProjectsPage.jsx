@@ -25,6 +25,14 @@ const copyByLanguage = {
       gallery: 'Galería', liveUrl: 'URL del proyecto', repoUrl: 'URL del repositorio', startDate: 'Fecha de inicio', endDate: 'Fecha de fin',
     },
     hints: { technologies: 'Separadas por comas', gallery: 'Una URL por línea' },
+    placeholders: {
+      title: 'Ej. Plataforma de gestión de proyectos', slug: 'plataforma-gestion-proyectos',
+      summary: 'Ej. Aplicación MERN para organizar equipos y entregas.',
+      description: 'Describe el problema, la solución y los resultados del proyecto...', category: 'Ej. Aplicación web',
+      technologies: 'React, Node.js, MongoDB', coverImage: 'https://res.cloudinary.com/.../portada.webp',
+      gallery: 'https://res.cloudinary.com/.../vista-1.webp\nhttps://res.cloudinary.com/.../vista-2.webp',
+      liveUrl: 'https://proyecto.example.com', repoUrl: 'https://github.com/usuario/repositorio',
+    },
     statuses: { planned: 'Planificado', 'in-progress': 'En progreso', completed: 'Completado', archived: 'Archivado' },
   },
   en: {
@@ -41,6 +49,14 @@ const copyByLanguage = {
       gallery: 'Gallery', liveUrl: 'Live URL', repoUrl: 'Repository URL', startDate: 'Start date', endDate: 'End date',
     },
     hints: { technologies: 'Comma separated', gallery: 'One URL per line' },
+    placeholders: {
+      title: 'E.g. Project management platform', slug: 'project-management-platform',
+      summary: 'E.g. MERN application for organizing teams and deliveries.',
+      description: 'Describe the problem, solution and project results...', category: 'E.g. Web application',
+      technologies: 'React, Node.js, MongoDB', coverImage: 'https://res.cloudinary.com/.../cover.webp',
+      gallery: 'https://res.cloudinary.com/.../view-1.webp\nhttps://res.cloudinary.com/.../view-2.webp',
+      liveUrl: 'https://project.example.com', repoUrl: 'https://github.com/user/repository',
+    },
     statuses: { planned: 'Planned', 'in-progress': 'In progress', completed: 'Completed', archived: 'Archived' },
   },
 };
@@ -224,14 +240,14 @@ function ProjectEditor({ labels, mode }) {
       {status !== 'error' && (
         <form className="admin-form" onSubmit={handleSubmit}>
           <div className="form-grid">
-            <Field label={labels.fields.title}><input maxLength="140" name="title" onChange={handleChange} required value={form.title} /></Field>
-            <Field label={labels.fields.slug}><input maxLength="160" name="slug" onChange={handleChange} pattern="[a-z0-9]+(?:-[a-z0-9]+)*" value={form.slug} /></Field>
+            <Field label={labels.fields.title}><input maxLength="140" name="title" onChange={handleChange} placeholder={labels.placeholders.title} required value={form.title} /></Field>
+            <Field label={labels.fields.slug}><input maxLength="160" name="slug" onChange={handleChange} pattern="[a-z0-9]+(?:-[a-z0-9]+)*" placeholder={labels.placeholders.slug} value={form.slug} /></Field>
           </div>
-          <Field label={labels.fields.summary}><textarea maxLength="240" name="summary" onChange={handleChange} required rows="3" value={form.summary} /></Field>
-          <Field label={labels.fields.description}><textarea maxLength="10000" name="description" onChange={handleChange} required rows="9" value={form.description} /></Field>
+          <Field label={labels.fields.summary}><textarea maxLength="240" name="summary" onChange={handleChange} placeholder={labels.placeholders.summary} required rows="3" value={form.summary} /></Field>
+          <Field label={labels.fields.description}><textarea maxLength="10000" name="description" onChange={handleChange} placeholder={labels.placeholders.description} required rows="9" value={form.description} /></Field>
           <div className="form-grid">
             <Field label={labels.fields.category}>
-              <input list="project-categories" maxLength="80" name="category" onChange={handleChange} value={form.category} />
+              <input list="project-categories" maxLength="80" name="category" onChange={handleChange} placeholder={labels.placeholders.category} value={form.category} />
               <datalist id="project-categories">{categoryOptions.map((category) => <option key={category} value={category} />)}</datalist>
             </Field>
             <Field label={labels.fields.status}>
@@ -240,12 +256,12 @@ function ProjectEditor({ labels, mode }) {
               </select>
             </Field>
           </div>
-          <Field hint={labels.hints.technologies} label={labels.fields.technologies}><input name="technologies" onChange={handleChange} value={form.technologies} /></Field>
-          <Field label={labels.fields.coverImage}><input name="coverImage" onChange={handleChange} type="url" value={form.coverImage} /></Field>
-          <Field hint={labels.hints.gallery} label={labels.fields.gallery}><textarea name="gallery" onChange={handleChange} rows="4" value={form.gallery} /></Field>
+          <Field hint={labels.hints.technologies} label={labels.fields.technologies}><input name="technologies" onChange={handleChange} placeholder={labels.placeholders.technologies} value={form.technologies} /></Field>
+          <Field label={labels.fields.coverImage}><input name="coverImage" onChange={handleChange} placeholder={labels.placeholders.coverImage} type="url" value={form.coverImage} /></Field>
+          <Field hint={labels.hints.gallery} label={labels.fields.gallery}><textarea name="gallery" onChange={handleChange} placeholder={labels.placeholders.gallery} rows="4" value={form.gallery} /></Field>
           <div className="form-grid">
-            <Field label={labels.fields.liveUrl}><input name="liveUrl" onChange={handleChange} type="url" value={form.liveUrl} /></Field>
-            <Field label={labels.fields.repoUrl}><input name="repoUrl" onChange={handleChange} type="url" value={form.repoUrl} /></Field>
+            <Field label={labels.fields.liveUrl}><input name="liveUrl" onChange={handleChange} placeholder={labels.placeholders.liveUrl} type="url" value={form.liveUrl} /></Field>
+            <Field label={labels.fields.repoUrl}><input name="repoUrl" onChange={handleChange} placeholder={labels.placeholders.repoUrl} type="url" value={form.repoUrl} /></Field>
           </div>
           <div className="form-grid">
             <Field label={labels.fields.startDate}><input name="startDate" onChange={handleChange} type="date" value={form.startDate} /></Field>

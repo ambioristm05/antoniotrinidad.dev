@@ -32,6 +32,7 @@ const copyByLanguage = {
     saveError: 'No se pudo guardar la categoría.',
     deleteError: 'No se pudo eliminar la categoría.',
     confirmDelete: '¿Eliminar esta categoría? El contenido existente conservará su texto de categoría.',
+    placeholders: { name: 'Ej. Desarrollo web', slug: 'ej-desarrollo-web' },
   },
   en: {
     eyebrow: 'Taxonomy',
@@ -55,6 +56,7 @@ const copyByLanguage = {
     saveError: 'The category could not be saved.',
     deleteError: 'The category could not be deleted.',
     confirmDelete: 'Delete this category? Existing content will keep its category text.',
+    placeholders: { name: 'E.g. Web development', slug: 'web-development' },
   },
 };
 
@@ -181,8 +183,8 @@ export default function AdminCategoriesPage() {
           </div>
           <form className="admin-form" onSubmit={handleSubmit}>
             <div className="form-grid">
-              <label>{labels.name}<input autoFocus maxLength="80" name="name" onChange={handleChange} required value={form.name} /></label>
-              <label>{labels.slug}<input maxLength="100" name="slug" onChange={handleChange} value={form.slug} /></label>
+              <label>{labels.name}<input autoFocus maxLength="80" name="name" onChange={handleChange} placeholder={labels.placeholders.name} required value={form.name} /></label>
+              <label>{labels.slug}<input maxLength="100" name="slug" onChange={handleChange} placeholder={labels.placeholders.slug} value={form.slug} /></label>
             </div>
             <label>{labels.type}
               <select name="type" onChange={handleChange} required value={form.type}>

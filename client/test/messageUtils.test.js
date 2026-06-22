@@ -1,7 +1,12 @@
 import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
-import { buildMessageQuery, removeMessage, replaceMessage } from '../src/services/messageUtils.js';
+import {
+  buildEmailReplyUrl,
+  buildMessageQuery,
+  removeMessage,
+  replaceMessage,
+} from '../src/services/messageUtils.js';
 
 describe('message utilities', () => {
   it('builds bounded API queries and omits inactive filters', () => {
@@ -23,5 +28,19 @@ describe('message utilities', () => {
     assert.equal(original[0].status, 'unread');
     assert.deepEqual(replaced, [{ _id: 'one', status: 'read' }, { _id: 'two', status: 'read' }]);
     assert.deepEqual(removed, [{ _id: 'one', status: 'read' }]);
+  });
+
+  it('builds a Gmail reply composer URL with encoded message details', () => {
+    const url = new URL(buildEmailReplyUrl({
+      email: 'client@example.com',
+      name: 'Ana',
+      subject: 'Proyecto & API',
+      language: 'es',
+    }));
+
+    assert.equal(url.origin, 'https://mail.google.com');
+    assert.equal(url.searchParams.get('to'), 'client@example.com');
+    assert.equal(url.searchParams.get('su'), 'Re: Proyecto & API');
+    assert.equal(url.searchParams.get('body'), 'Hola Ana,\n\n');
   });
 });

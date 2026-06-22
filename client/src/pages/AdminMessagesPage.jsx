@@ -11,7 +11,12 @@ import { useEffect, useState } from 'react';
 
 import { usePreferences } from '../contexts/PreferencesContext.jsx';
 import { api } from '../services/api.js';
-import { buildMessageQuery, removeMessage, replaceMessage } from '../services/messageUtils.js';
+import {
+  buildEmailReplyUrl,
+  buildMessageQuery,
+  removeMessage,
+  replaceMessage,
+} from '../services/messageUtils.js';
 
 const copyByLanguage = {
   es: {
@@ -191,7 +196,15 @@ export default function AdminMessagesPage() {
               </header>
               <p className="message-detail__body">{selected.message}</p>
               <div className="message-actions">
-                <a className="button button--primary" href={`mailto:${selected.email}?subject=${encodeURIComponent(`Re: ${selected.subject}`)}`}><Mail aria-hidden="true" size={17} />{labels.reply}</a>
+                <a
+                  className="button button--primary"
+                  href={buildEmailReplyUrl({ email: selected.email, name: selected.name, subject: selected.subject, language })}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  <Mail aria-hidden="true" size={17} />
+                  {labels.reply}
+                </a>
                 {selected.status === 'unread' ? (
                   <button className="button button--secondary" disabled={updating} onClick={() => updateStatus('read')} type="button"><MailOpen aria-hidden="true" size={17} />{labels.markRead}</button>
                 ) : selected.status === 'read' ? (

@@ -22,6 +22,12 @@ const copyByLanguage = {
       featured: 'Artículo destacado', publishedAt: 'Fecha de publicación',
     },
     hints: { tags: 'Separadas por comas', content: 'Puedes usar encabezados, listas, enlaces y bloques de código Markdown.' },
+    placeholders: {
+      title: 'Ej. Cómo construir una API segura', slug: 'como-construir-una-api-segura',
+      excerpt: 'Ej. Principios prácticos para proteger una API Express.',
+      content: '# Introducción\n\nEscribe aquí el contenido del artículo...', category: 'Ej. Backend',
+      tags: 'Node.js, Express, MongoDB', coverImage: 'https://res.cloudinary.com/.../portada.webp',
+    },
     statuses: { draft: 'Borrador', published: 'Publicado' },
   },
   en: {
@@ -38,6 +44,12 @@ const copyByLanguage = {
       featured: 'Featured article', publishedAt: 'Publication date',
     },
     hints: { tags: 'Comma separated', content: 'You can use Markdown headings, lists, links and code blocks.' },
+    placeholders: {
+      title: 'E.g. How to build a secure API', slug: 'how-to-build-a-secure-api',
+      excerpt: 'E.g. Practical principles for securing an Express API.',
+      content: '# Introduction\n\nWrite the article content here...', category: 'E.g. Backend',
+      tags: 'Node.js, Express, MongoDB', coverImage: 'https://res.cloudinary.com/.../cover.webp',
+    },
     statuses: { draft: 'Draft', published: 'Published' },
   },
 };
@@ -194,17 +206,17 @@ function PostEditor({ labels, mode }) {
       {status !== 'error' && (
         <form className="admin-form" onSubmit={handleSubmit}>
           <div className="form-grid">
-            <Field label={labels.fields.title}><input maxLength="160" name="title" onChange={handleChange} required value={form.title} /></Field>
-            <Field label={labels.fields.slug}><input maxLength="180" name="slug" onChange={handleChange} value={form.slug} /></Field>
+            <Field label={labels.fields.title}><input maxLength="160" name="title" onChange={handleChange} placeholder={labels.placeholders.title} required value={form.title} /></Field>
+            <Field label={labels.fields.slug}><input maxLength="180" name="slug" onChange={handleChange} placeholder={labels.placeholders.slug} value={form.slug} /></Field>
           </div>
-          <Field label={labels.fields.excerpt}><textarea maxLength="260" name="excerpt" onChange={handleChange} required rows="3" value={form.excerpt} /></Field>
-          <Field hint={labels.hints.content} label={labels.fields.content}><textarea className="content-editor" maxLength="100000" name="content" onChange={handleChange} required rows="18" value={form.content} /></Field>
+          <Field label={labels.fields.excerpt}><textarea maxLength="260" name="excerpt" onChange={handleChange} placeholder={labels.placeholders.excerpt} required rows="3" value={form.excerpt} /></Field>
+          <Field hint={labels.hints.content} label={labels.fields.content}><textarea className="content-editor" maxLength="100000" name="content" onChange={handleChange} placeholder={labels.placeholders.content} required rows="18" value={form.content} /></Field>
           <div className="form-grid">
             <Field label={labels.fields.category}>
-              <input list="post-categories" maxLength="80" name="category" onChange={handleChange} value={form.category} />
+              <input list="post-categories" maxLength="80" name="category" onChange={handleChange} placeholder={labels.placeholders.category} value={form.category} />
               <datalist id="post-categories">{categoryOptions.map((category) => <option key={category} value={category} />)}</datalist>
             </Field>
-            <Field hint={labels.hints.tags} label={labels.fields.tags}><input name="tags" onChange={handleChange} value={form.tags} /></Field>
+            <Field hint={labels.hints.tags} label={labels.fields.tags}><input name="tags" onChange={handleChange} placeholder={labels.placeholders.tags} value={form.tags} /></Field>
           </div>
           <div className="form-grid">
             <Field label={labels.fields.status}>
@@ -212,7 +224,7 @@ function PostEditor({ labels, mode }) {
             </Field>
             <Field label={labels.fields.publishedAt}><input disabled={form.status === 'draft'} name="publishedAt" onChange={handleChange} type="datetime-local" value={form.publishedAt} /></Field>
           </div>
-          <Field label={labels.fields.coverImage}><input name="coverImage" onChange={handleChange} type="url" value={form.coverImage} /></Field>
+          <Field label={labels.fields.coverImage}><input name="coverImage" onChange={handleChange} placeholder={labels.placeholders.coverImage} type="url" value={form.coverImage} /></Field>
           <label className="checkbox-field"><input checked={form.featured} name="featured" onChange={handleChange} type="checkbox" />{labels.fields.featured}</label>
           <div className="form-actions">
             <button className="button button--primary" disabled={status === 'saving'} type="submit">{status === 'saving' ? labels.saving : labels.save}</button>
