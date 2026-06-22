@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import SectionHeader from '../components/SectionHeader.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
 import { usePageMetadata } from '../hooks/usePageMetadata.js';
+import { buildEmailComposeUrl } from '../services/emailLinks.js';
 
 const siteName = 'antoniotrinidad.dev';
 
@@ -87,6 +88,10 @@ function renderLink(item) {
 
   if (item.href.startsWith('/')) {
     return <Link to={item.href}>{item.value}</Link>;
+  }
+
+  if (item.href.startsWith('mailto:')) {
+    return <a href={buildEmailComposeUrl({ email: item.value })} rel="noreferrer" target="_blank">{item.value}</a>;
   }
 
   return <a href={item.href}>{item.value}</a>;

@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import PostCard from '../components/PostCard.jsx';
 import ProjectCard from '../components/ProjectCard.jsx';
 import SectionHeader from '../components/SectionHeader.jsx';
+import StackIcon from '../components/StackIcon.jsx';
 import ContentFeedback from '../components/ContentFeedback.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
 import { useApiResource } from '../hooks/useApiResource.js';
@@ -95,15 +96,20 @@ export default function HomePage() {
       </section>
 
       <section className="content-section content-section--muted">
-        <SectionHeader
-          eyebrow={home.stack.eyebrow}
-          title={home.stack.title}
-          description={home.stack.description}
-        />
-        <div className="skill-cloud">
-          {skills.map((skill) => (
-            <span key={skill}>{skill}</span>
-          ))}
+        <div className="content-section__inner">
+          <SectionHeader
+            eyebrow={home.stack.eyebrow}
+            title={home.stack.title}
+            description={home.stack.description}
+          />
+          <ul className="stack-icon-grid" aria-label={home.stack.title}>
+            {skills.map((skill) => (
+              <li className={`stack-icon-grid__item stack-icon-grid__item--${skill.id}`} key={skill.id} title={skill.label}>
+                <StackIcon id={skill.id} />
+                <span className="sr-only">{skill.label}</span>
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 

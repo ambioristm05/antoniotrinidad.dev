@@ -21,7 +21,7 @@ export default function AboutPage() {
           ))}
           <div className="skill-cloud">
             {skills.map((skill) => (
-              <span key={skill}>{skill}</span>
+              <span key={skill.id}>{skill.label}</span>
             ))}
           </div>
         </div>

@@ -1,3 +1,5 @@
+import { buildEmailComposeUrl } from './emailLinks.js';
+
 export const buildMessageQuery = ({ filter = 'all', page = 1, search = '' } = {}) => ({
   page,
   limit: 10,
@@ -14,13 +16,9 @@ export const removeMessage = (messages, id) =>
 
 export const buildEmailReplyUrl = ({ email = '', name = '', subject = '', language = 'es' } = {}) => {
   const greeting = language === 'es' ? `Hola ${name.trim() || 'allí'},` : `Hello ${name.trim() || 'there'},`;
-  const params = new URLSearchParams({
-    view: 'cm',
-    fs: '1',
-    to: email.trim(),
-    su: `Re: ${subject.trim()}`,
+  return buildEmailComposeUrl({
+    email,
+    subject: `Re: ${subject.trim()}`,
     body: `${greeting}\n\n`,
   });
-
-  return `https://mail.google.com/mail/?${params.toString()}`;
 };

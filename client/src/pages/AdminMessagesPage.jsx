@@ -11,6 +11,7 @@ import { useEffect, useState } from 'react';
 
 import { usePreferences } from '../contexts/PreferencesContext.jsx';
 import { api } from '../services/api.js';
+import { buildEmailComposeUrl } from '../services/emailLinks.js';
 import {
   buildEmailReplyUrl,
   buildMessageQuery,
@@ -190,7 +191,7 @@ export default function AdminMessagesPage() {
                 <span>{labels.statuses[selected.status]}</span>
                 <h2>{selected.subject}</h2>
                 <dl>
-                  <div><dt>{labels.from}</dt><dd>{selected.name} · <a href={`mailto:${selected.email}`}>{selected.email}</a></dd></div>
+                  <div><dt>{labels.from}</dt><dd>{selected.name} · <a href={buildEmailComposeUrl({ email: selected.email })} rel="noreferrer" target="_blank">{selected.email}</a></dd></div>
                   <div><dt>{labels.received}</dt><dd>{formatDateTime(selected.createdAt, language)}</dd></div>
                 </dl>
               </header>
