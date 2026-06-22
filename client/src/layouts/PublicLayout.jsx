@@ -3,6 +3,7 @@ import { Languages, Menu, Moon, ShieldCheck, Sun, X } from 'lucide-react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import BrandLogo from '../components/BrandLogo.jsx';
+import CookieConsentBanner from '../components/CookieConsentBanner.jsx';
 import { usePreferences } from '../contexts/PreferencesContext.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
 
@@ -123,6 +124,7 @@ export default function PublicLayout() {
           </NavLink>
         </div>
       </footer>
+      <CookieConsentBanner />
     </div>
   );
 }

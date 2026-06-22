@@ -1358,6 +1358,77 @@ textarea {
   flex-wrap: wrap;
 }
 
+.contact-consent {
+  display: flex !important;
+  flex: 1 1 340px;
+  grid-template-columns: none;
+  gap: 10px !important;
+  align-items: center;
+  font-weight: 650 !important;
+  line-height: 1.45;
+}
+
+.contact-consent input {
+  width: 18px;
+  min-height: 18px;
+  flex: 0 0 18px;
+  margin: 0;
+}
+
+.contact-consent a,
+.cookie-banner a {
+  color: var(--green);
+  font-weight: 800;
+  text-decoration: underline;
+}
+
+.cookie-banner {
+  position: fixed;
+  z-index: 40;
+  right: 50%;
+  bottom: 16px;
+  display: flex;
+  width: min(calc(100% - 32px), var(--container));
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  transform: translateX(50%);
+}
+
+.cookie-banner__content {
+  display: flex;
+  min-width: 0;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.cookie-banner__content > svg {
+  flex: 0 0 auto;
+  color: var(--green);
+}
+
+.cookie-banner__content strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.cookie-banner__content p {
+  margin: 0 0 5px;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.cookie-banner__actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 10px;
+}
+
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -2344,6 +2415,18 @@ th {
 
   .auth-panel {
     padding: 20px;
+  }
+}
+
+@media (max-width: 680px) {
+  .cookie-banner {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .cookie-banner__actions .button {
+    flex: 1 1 0;
   }
 }
 

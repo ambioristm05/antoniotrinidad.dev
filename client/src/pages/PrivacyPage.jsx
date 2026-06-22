@@ -36,7 +36,7 @@ export default function PrivacyPage() {
         ) : null}
         {privacy.sections ? (
           privacy.sections.map((section) => (
-            <section className="privacy-section" key={section.title}>
+            <section className="privacy-section" id={section.title === 'Cookies' ? 'cookies' : undefined} key={section.title}>
               <h2>{section.title}</h2>
               {section.paragraphs?.map((paragraph) => (
                 <p key={paragraph}>{linkSiteName(paragraph)}</p>
