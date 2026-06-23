@@ -24,6 +24,12 @@ export const api = {
   getAdminPosts: (query, options) => http.get('/posts/admin/all', { ...options, query }),
   getFeaturedPosts: (options) => http.get('/posts/featured', options),
   getPost: (slug, options) => http.get(`/posts/${encodeURIComponent(slug)}`, options),
+  getPostComments: (slug, query, options) =>
+    http.get(`/posts/${encodeURIComponent(slug)}/comments`, { ...options, query }),
+  createPostComment: (slug, payload, options) =>
+    http.post(`/posts/${encodeURIComponent(slug)}/comments`, payload, options),
+  createPostCommentReply: (slug, commentId, payload, options) =>
+    http.post(`/posts/${encodeURIComponent(slug)}/comments/${encodeURIComponent(commentId)}/replies`, payload, options),
   createPost: (payload, options) => http.post('/posts', payload, options),
   updatePost: (id, payload, options) =>
     http.patch(`/posts/${encodeURIComponent(id)}`, payload, options),

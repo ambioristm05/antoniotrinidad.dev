@@ -28,3 +28,14 @@ export const contactLimiter = rateLimit({
   standardHeaders: 'draft-7',
   legacyHeaders: false,
 });
+
+export const commentLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 10,
+  message: {
+    status: 'fail',
+    message: 'Too many comment requests. Try again later.',
+  },
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+});

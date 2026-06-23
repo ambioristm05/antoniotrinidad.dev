@@ -18,6 +18,7 @@ const { default: app } = await import('../src/app.js');
 const { Category } = await import('../src/models/Category.js');
 const { ContactMessage } = await import('../src/models/ContactMessage.js');
 const { Post } = await import('../src/models/Post.js');
+const { PostComment } = await import('../src/models/PostComment.js');
 const { Project } = await import('../src/models/Project.js');
 const { User } = await import('../src/models/User.js');
 const { ensureAdmin, resetAdminPassword } = await import('../src/services/admin.service.js');
@@ -125,6 +126,7 @@ describe('Backend API', { concurrency: false }, () => {
       Category.deleteMany({}),
       ContactMessage.deleteMany({}),
       Post.deleteMany({}),
+      PostComment.deleteMany({}),
       Project.deleteMany({}),
       User.deleteMany({}),
     ]);
@@ -1138,6 +1140,101 @@ describe('Backend API', { concurrency: false }, () => {
     assert.equal(featured.response.status, 200);
     assert.equal(featured.body.results, 6);
     assert.ok(featured.body.data.posts.every((post) => new Date(post.publishedAt) <= new Date()));
+  });
+
+  it('lists, creates and replies to public post comments without exposing emails', async () => {
+    const { user } = await seedAuthorizedAdmin();
+    const post = await Post.create({
+      title: 'Commented Post',
+      excerpt: 'A public post that accepts comments.',
+      content: '# Comments',
+      author: user._id,
+      status: 'published',
+      publishedAt: new Date(Date.now() - 60_000),
+    });
+    await Post.create({
+      title: 'Private Post',
+      excerpt: 'This draft should not accept comments.',
+      content: '# Draft',
+      author: user._id,
+      status: 'draft',
+    });
+
+    const invalid = await request(`/api/posts/${post.slug}/comments`, {
+      method: 'POST',
+      body: {
+        authorName: 'A',
+        authorEmail: 'invalid',
+        message: 'No',
+      },
+    });
+
+    assert.equal(invalid.response.status, 400);
+    assert.match(invalid.body.message, /Email must be a valid email/);
+
+    const created = await request(`/api/posts/${post.slug}/comments`, {
+      method: 'POST',
+      body: {
+        authorName: 'Ada Lovelace',
+        authorEmail: 'Ada@Example.com',
+        message: 'This article is useful.',
+      },
+    });
+
+    assert.equal(created.response.status, 201);
+    assert.equal(created.body.data.comment.authorName, 'Ada Lovelace');
+    assert.equal(created.body.data.comment.authorEmail, undefined);
+    assert.equal(await PostComment.countDocuments({ post: post._id }), 1);
+
+    const stored = await PostComment.findById(created.body.data.comment._id).select('+authorEmail');
+
+    assert.equal(stored.authorEmail, 'ada@example.com');
+
+    const reply = await request(`/api/posts/${post.slug}/comments/${created.body.data.comment._id}/replies`, {
+      method: 'POST',
+      body: {
+        authorName: 'Antonio Trinidad',
+        authorEmail: 'hi@antoniotrinidad.dev',
+        message: 'Gracias por leerlo.',
+      },
+    });
+
+    assert.equal(reply.response.status, 201);
+    assert.equal(reply.body.data.reply.authorName, 'Antonio Trinidad');
+    assert.equal(reply.body.data.reply.authorEmail, undefined);
+
+    const listed = await request(`/api/posts/${post.slug}/comments?limit=5&sort=-createdAt`);
+
+    assert.equal(listed.response.status, 200);
+    assert.equal(listed.body.results, 1);
+    assert.equal(listed.body.data.comments[0].message, 'This article is useful.');
+    assert.equal(listed.body.data.comments[0].authorEmail, undefined);
+    assert.equal(listed.body.data.comments[0].replies[0].message, 'Gracias por leerlo.');
+    assert.equal(listed.body.data.comments[0].replies[0].authorEmail, undefined);
+
+    const hidden = await request('/api/posts/private-post/comments', {
+      method: 'POST',
+      body: {
+        authorName: 'Ada Lovelace',
+        authorEmail: 'ada@example.com',
+        message: 'Draft comments should fail.',
+      },
+    });
+
+    assert.equal(hidden.response.status, 404);
+
+    const honeypot = await request(`/api/posts/${post.slug}/comments`, {
+      method: 'POST',
+      body: {
+        authorName: 'Spam Sender',
+        authorEmail: 'spam@example.com',
+        message: 'This should not be stored.',
+        website: 'https://spam.example.com',
+      },
+    });
+
+    assert.equal(honeypot.response.status, 201);
+    assert.equal(await PostComment.countDocuments({ post: post._id }), 1);
   });
 
   it('updates publication state and deletes posts with consistent errors', async () => {
