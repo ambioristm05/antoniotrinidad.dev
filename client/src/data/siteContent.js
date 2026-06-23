@@ -1,7 +1,7 @@
 const sharedProfile = {
   name: 'Antonio Trinidad Mercedes',
   siteName: 'antoniotrinidad.dev',
-  logoUrl: '/favicon.png',
+  logoUrl: '/favicon.svg',
   logoWideUrl: '/brand/antonio-trinidad-logo.png',
   email: 'hi@antoniotrinidad.dev',
   github: 'https://github.com/',
