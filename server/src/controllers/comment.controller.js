@@ -30,6 +30,7 @@ const sendPublicSuccess = (res) =>
 const toPublicReply = (reply) => ({
   _id: reply._id,
   authorName: reply.authorName,
+  authorAvatar: reply.authorAvatar,
   message: reply.message,
   createdAt: reply.createdAt,
   updatedAt: reply.updatedAt,
@@ -39,6 +40,7 @@ const toPublicComment = (comment) => ({
   _id: comment._id,
   post: comment.post,
   authorName: comment.authorName,
+  authorAvatar: comment.authorAvatar,
   message: comment.message,
   status: comment.status,
   replies: (comment.replies ?? []).map(toPublicReply),
@@ -85,7 +87,7 @@ export const createPostComment = asyncHandler(async (req, res) => {
 
   const comment = await PostComment.create({
     post: post._id,
-    ...pick(req.body, ['authorName', 'authorEmail', 'message']),
+    ...pick(req.body, ['authorName', 'authorEmail', 'authorAvatar', 'message']),
   });
 
   res.status(201).json({
@@ -114,7 +116,7 @@ export const createPostCommentReply = asyncHandler(async (req, res) => {
     throw new AppError('Comment not found', 404);
   }
 
-  comment.replies.push(pick(req.body, ['authorName', 'authorEmail', 'message']));
+  comment.replies.push(pick(req.body, ['authorName', 'authorEmail', 'authorAvatar', 'message']));
   await comment.save();
 
   const reply = comment.replies.at(-1);

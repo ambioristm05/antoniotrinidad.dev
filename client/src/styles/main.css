@@ -1220,9 +1220,9 @@ button:focus-visible {
 
 .user-avatar {
   display: block;
-  width: 38px;
-  height: 38px;
-  flex: 0 0 38px;
+  width: 42px;
+  height: 42px;
+  flex: 0 0 42px;
   overflow: hidden;
   border: 1px solid color-mix(in srgb, var(--green) 34%, var(--line));
   border-radius: 50%;

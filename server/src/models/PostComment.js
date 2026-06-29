@@ -19,6 +19,12 @@ const replySchema = new mongoose.Schema(
       },
       select: false,
     },
+    authorAvatar: {
+      type: String,
+      trim: true,
+      maxlength: [1000, 'Reply author avatar cannot exceed 1000 characters'],
+      default: '',
+    },
     message: {
       type: String,
       required: [true, 'Reply message is required'],
@@ -45,12 +51,20 @@ const postCommentSchema = new mongoose.Schema(
     },
     authorEmail: {
       type: String,
-      required: [true, 'Comment author email is required'],
       lowercase: true,
       trim: true,
       maxlength: [254, 'Comment author email cannot exceed 254 characters'],
-      match: [/^\S+@\S+\.\S+$/, 'Comment author email is invalid'],
+      validate: {
+        validator: (value) => !value || /^\S+@\S+\.\S+$/.test(value),
+        message: 'Comment author email is invalid',
+      },
       select: false,
+    },
+    authorAvatar: {
+      type: String,
+      trim: true,
+      maxlength: [1000, 'Comment author avatar cannot exceed 1000 characters'],
+      default: '',
     },
     message: {
       type: String,

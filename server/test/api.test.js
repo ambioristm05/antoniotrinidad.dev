@@ -1177,12 +1177,14 @@ describe('Backend API', { concurrency: false }, () => {
       body: {
         authorName: 'Ada Lovelace',
         authorEmail: 'Ada@Example.com',
+        authorAvatar: 'https://example.com/ada.png',
         message: 'This article is useful.',
       },
     });
 
     assert.equal(created.response.status, 201);
     assert.equal(created.body.data.comment.authorName, 'Ada Lovelace');
+    assert.equal(created.body.data.comment.authorAvatar, 'https://example.com/ada.png');
     assert.equal(created.body.data.comment.authorEmail, undefined);
     assert.equal(await PostComment.countDocuments({ post: post._id }), 1);
 
@@ -1195,12 +1197,14 @@ describe('Backend API', { concurrency: false }, () => {
       body: {
         authorName: 'Antonio Trinidad',
         authorEmail: 'hi@antoniotrinidad.dev',
+        authorAvatar: 'https://example.com/antonio.png',
         message: 'Gracias por leerlo.',
       },
     });
 
     assert.equal(reply.response.status, 201);
     assert.equal(reply.body.data.reply.authorName, 'Antonio Trinidad');
+    assert.equal(reply.body.data.reply.authorAvatar, 'https://example.com/antonio.png');
     assert.equal(reply.body.data.reply.authorEmail, undefined);
 
     const listed = await request(`/api/posts/${post.slug}/comments?limit=5&sort=-createdAt`);

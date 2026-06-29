@@ -12,12 +12,30 @@ import {
   addComment,
   addReplyToComment,
   commentFormToPayload,
+  defaultCommentAvatar,
   emptyCommentForm,
   emptyReplyForm,
+  getBrowserCommentUser,
   replyFormToPayload,
 } from '../services/postComments.js';
 import { formatDate, formatDateTime } from '../utils/formatters.js';
 import NotFoundPage from './NotFoundPage.jsx';
+
+function UserAvatar({ name, avatarUrl }) {
+  return (
+    <img
+      className="user-avatar"
+      src={avatarUrl || defaultCommentAvatar}
+      alt=""
+      loading="lazy"
+      title={name}
+      onError={(event) => {
+        if (event.currentTarget.src.endsWith(defaultCommentAvatar)) return;
+        event.currentTarget.src = defaultCommentAvatar;
+      }}
+    />
+  );
+}
 
 export default function PostDetailPage() {
   const { slug } = useParams();
@@ -28,6 +46,8 @@ export default function PostDetailPage() {
   const [comments, setComments] = useState([]);
   const [commentsStatus, setCommentsStatus] = useState('idle');
   const [commentsError, setCommentsError] = useState('');
+  const [showAllComments, setShowAllComments] = useState(false);
+  const [currentUser, setCurrentUser] = useState(() => getBrowserCommentUser(commentsCopy.guestName));
   const [commentForm, setCommentForm] = useState(emptyCommentForm);
   const [activeReplyId, setActiveReplyId] = useState(null);
   const [replyForms, setReplyForms] = useState({});
@@ -50,7 +70,7 @@ export default function PostDetailPage() {
       image: post.coverImage || undefined,
       datePublished: post.publishedAt,
       dateModified: post.updatedAt,
-      author: { '@type': 'Person', name: post.author?.name || 'Antonio Trinidad' },
+      author: { '@type': 'Person', name: post.author?.name || 'Antonio Trinidad Mercedes' },
     } : undefined,
   });
 
@@ -64,6 +84,7 @@ export default function PostDetailPage() {
     api.getPostComments(slug, { limit: 50 }, { signal: controller.signal })
       .then((response) => {
         setComments(response.data.comments);
+        setShowAllComments(false);
         setCommentsStatus('success');
       })
       .catch((requestError) => {
@@ -74,6 +95,10 @@ export default function PostDetailPage() {
 
     return () => controller.abort();
   }, [copy.commentsError, slug, status]);
+
+  useEffect(() => {
+    setCurrentUser(getBrowserCommentUser(commentsCopy.guestName));
+  }, [commentsCopy.guestName]);
 
   const handleCommentChange = ({ target }) => {
     setCommentForm((current) => ({ ...current, [target.name]: target.value }));
@@ -97,7 +122,7 @@ export default function PostDetailPage() {
     setCommentsError('');
 
     try {
-      const response = await api.createPostComment(slug, commentFormToPayload(commentForm));
+      const response = await api.createPostComment(slug, commentFormToPayload(commentForm, currentUser));
       setComments((current) => addComment(current, response.data.comment));
       setCommentForm(emptyCommentForm);
       setCommentsStatus('success');
@@ -115,7 +140,7 @@ export default function PostDetailPage() {
 
     try {
       const form = replyForms[commentId] ?? emptyReplyForm;
-      const response = await api.createPostCommentReply(slug, commentId, replyFormToPayload(form));
+      const response = await api.createPostCommentReply(slug, commentId, replyFormToPayload(form, currentUser));
       setComments((current) => addReplyToComment(current, commentId, response.data.reply));
       setReplyForms((current) => ({ ...current, [commentId]: emptyReplyForm }));
       setActiveReplyId(null);
@@ -128,6 +153,8 @@ export default function PostDetailPage() {
 
   if (status === 'error' && error?.status === 404) return <NotFoundPage />;
   if (status !== 'success') return <section className="page-section"><ContentFeedback copy={copy} error={error} loading={status === 'loading'} onRetry={retry} /></section>;
+
+  const visibleComments = showAllComments ? comments : comments.slice(0, 10);
 
   return (
     <article className="page-section article-page">
@@ -151,6 +178,11 @@ export default function PostDetailPage() {
             <p className="eyebrow">{commentsCopy.eyebrow}</p>
             <h2 id="comments-title">{commentsCopy.title}</h2>
           </div>
+          {comments.length > 10 && (
+            <button className="text-link text-link--button" type="button" onClick={() => setShowAllComments((value) => !value)}>
+              {showAllComments ? commentsCopy.showRecent : commentsCopy.showAll}
+            </button>
+          )}
         </div>
 
         <form className="comment-form" onSubmit={handleCommentSubmit}>
@@ -158,15 +190,9 @@ export default function PostDetailPage() {
             <label htmlFor="comment-website">{copy.website}</label>
             <input autoComplete="off" id="comment-website" name="website" onChange={handleCommentChange} tabIndex="-1" value={commentForm.website} />
           </div>
-          <div className="form-grid">
-            <label>
-              {meta.code === 'es' ? 'Nombre' : 'Name'}
-              <input autoComplete="name" maxLength="100" minLength="2" name="authorName" onChange={handleCommentChange} placeholder={copy.namePlaceholder} required value={commentForm.authorName} />
-            </label>
-            <label>
-              Email
-              <input autoComplete="email" maxLength="254" name="authorEmail" onChange={handleCommentChange} placeholder={copy.emailPlaceholder} required type="email" value={commentForm.authorEmail} />
-            </label>
+          <div className="comment-composer__user">
+            <UserAvatar name={currentUser.authorName} avatarUrl={currentUser.authorAvatar} />
+            <strong>{currentUser.authorName}</strong>
           </div>
           <div className="comment-composer__control">
             <textarea aria-label={commentsCopy.messageLabel} maxLength="3000" minLength="3" name="message" onChange={handleCommentChange} placeholder={commentsCopy.messagePlaceholder} required rows="2" value={commentForm.message} />
@@ -181,13 +207,14 @@ export default function PostDetailPage() {
         {commentsStatus === 'success' && comments.length === 0 && <p className="content-feedback">{copy.emptyComments}</p>}
 
         <div className="comment-list">
-          {comments.map((comment) => {
+          {visibleComments.map((comment) => {
             const replyForm = replyForms[comment._id] ?? emptyReplyForm;
 
             return (
               <article className="comment-item" key={comment._id}>
                 <header>
                   <div className="comment-author">
+                    <UserAvatar name={comment.authorName} avatarUrl={comment.authorAvatar} />
                     <strong>{comment.authorName}</strong>
                   </div>
                   <time dateTime={comment.createdAt}>{formatDateTime(comment.createdAt, meta.dateLocale)}</time>
@@ -201,7 +228,10 @@ export default function PostDetailPage() {
                     {comment.replies.map((reply) => (
                       <article className="comment-reply" key={reply._id}>
                         <header>
-                          <strong>{reply.authorName}</strong>
+                          <div className="comment-author">
+                            <UserAvatar name={reply.authorName} avatarUrl={reply.authorAvatar} />
+                            <strong>{reply.authorName}</strong>
+                          </div>
                           <time dateTime={reply.createdAt}>{formatDateTime(reply.createdAt, meta.dateLocale)}</time>
                         </header>
                         <p>{reply.message}</p>
@@ -211,15 +241,9 @@ export default function PostDetailPage() {
                 )}
                 {activeReplyId === comment._id && (
                   <form className="reply-form" onSubmit={(event) => handleReplySubmit(event, comment._id)}>
-                    <div className="form-grid">
-                      <label>
-                        {meta.code === 'es' ? 'Nombre' : 'Name'}
-                        <input autoComplete="name" maxLength="100" minLength="2" name="authorName" onChange={(event) => handleReplyChange(comment._id, event)} placeholder={copy.namePlaceholder} required value={replyForm.authorName} />
-                      </label>
-                      <label>
-                        Email
-                        <input autoComplete="email" maxLength="254" name="authorEmail" onChange={(event) => handleReplyChange(comment._id, event)} placeholder={copy.emailPlaceholder} type="email" value={replyForm.authorEmail} />
-                      </label>
+                    <div className="comment-composer__user">
+                      <UserAvatar name={currentUser.authorName} avatarUrl={currentUser.authorAvatar} />
+                      <strong>{currentUser.authorName}</strong>
                     </div>
                     <div className="comment-composer__control">
                       <textarea aria-label={commentsCopy.replyLabel} maxLength="1500" minLength="3" name="message" onChange={(event) => handleReplyChange(comment._id, event)} placeholder={commentsCopy.replyPlaceholder} required rows="2" value={replyForm.message} />
