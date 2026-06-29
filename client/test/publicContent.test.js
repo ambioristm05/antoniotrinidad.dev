@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { describe, it } from 'node:test';
 
 import { filterPosts, filterProjects, getProjectCategories } from '../src/services/publicContent.js';
+import { getSiteContent } from '../src/data/siteContent.js';
 
 describe('public content helpers', () => {
   const projects = [{ category: 'api', title: 'One' }, { category: 'web', title: 'Two' }, { category: 'api', title: 'Three' }];
@@ -20,5 +21,13 @@ describe('public content helpers', () => {
     assert.deepEqual(filterPosts(posts, ' NODE '), [posts[0]]);
     assert.deepEqual(filterPosts(posts, 'accessible'), [posts[1]]);
     assert.deepEqual(filterPosts(posts, ''), posts);
+  });
+
+  it('loads localized site content with comment samples', () => {
+    const content = getSiteContent('es');
+
+    assert.equal(content.profile.github, 'https://github.com/ambioristm05');
+    assert.equal(content.blogPage.comments.samples.length, 12);
+    assert.ok(content.blogPage.comments.samples[0].avatarUrl);
   });
 });
