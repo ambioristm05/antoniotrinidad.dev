@@ -9,13 +9,15 @@ describe('project form transformations', () => {
       ...emptyProjectForm,
       title: '  Portfolio API  ', summary: '  A summary  ', description: '  Details  ',
       category: ' FullStack ', featured: true, technologies: 'React, Node\nReact',
-      gallery: 'https://example.com/one.png\nhttps://example.com/two.png', liveUrl: '  ',
+      coverImage: ' /projects/eval-apro/cover.webp ',
+      gallery: '/projects/eval-apro/one.webp\nhttps://example.com/two.png', liveUrl: '  ',
     });
 
     assert.deepEqual(payload, {
       title: 'Portfolio API', summary: 'A summary', description: 'Details', category: 'fullstack',
       status: 'completed', featured: true,
-      gallery: ['https://example.com/one.png', 'https://example.com/two.png'],
+      coverImage: '/projects/eval-apro/cover.webp',
+      gallery: ['/projects/eval-apro/one.webp', 'https://example.com/two.png'],
       technologies: ['React', 'Node'],
     });
   });
