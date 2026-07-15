@@ -24,13 +24,13 @@ const copyByLanguage = {
       status: 'Estado', featured: 'Proyecto destacado', technologies: 'Tecnologías', coverImage: 'Imagen de portada',
       gallery: 'Galería', liveUrl: 'URL del proyecto', repoUrl: 'URL del repositorio', startDate: 'Fecha de inicio', endDate: 'Fecha de fin',
     },
-    hints: { technologies: 'Separadas por comas', gallery: 'Una URL por línea' },
+    hints: { technologies: 'Separadas por comas', gallery: 'Una URL o ruta pública por línea' },
     placeholders: {
       title: 'Ej. Plataforma de gestión de proyectos', slug: 'plataforma-gestion-proyectos',
       summary: 'Ej. Aplicación MERN para organizar equipos y entregas.',
       description: 'Describe el problema, la solución y los resultados del proyecto...', category: 'Ej. Aplicación web',
-      technologies: 'React, Node.js, MongoDB', coverImage: 'https://res.cloudinary.com/.../portada.webp',
-      gallery: 'https://res.cloudinary.com/.../vista-1.webp\nhttps://res.cloudinary.com/.../vista-2.webp',
+      technologies: 'React, Node.js, MongoDB', coverImage: '/projects/eval-apro/portada.webp',
+      gallery: '/projects/eval-apro/vista-1.webp\nhttps://res.cloudinary.com/.../vista-2.webp',
       liveUrl: 'https://proyecto.example.com', repoUrl: 'https://github.com/usuario/repositorio',
     },
     statuses: { planned: 'Planificado', 'in-progress': 'En progreso', completed: 'Completado', archived: 'Archivado' },
@@ -48,13 +48,13 @@ const copyByLanguage = {
       status: 'Status', featured: 'Featured project', technologies: 'Technologies', coverImage: 'Cover image',
       gallery: 'Gallery', liveUrl: 'Live URL', repoUrl: 'Repository URL', startDate: 'Start date', endDate: 'End date',
     },
-    hints: { technologies: 'Comma separated', gallery: 'One URL per line' },
+    hints: { technologies: 'Comma separated', gallery: 'One URL or public path per line' },
     placeholders: {
       title: 'E.g. Project management platform', slug: 'project-management-platform',
       summary: 'E.g. MERN application for organizing teams and deliveries.',
       description: 'Describe the problem, solution and project results...', category: 'E.g. Web application',
-      technologies: 'React, Node.js, MongoDB', coverImage: 'https://res.cloudinary.com/.../cover.webp',
-      gallery: 'https://res.cloudinary.com/.../view-1.webp\nhttps://res.cloudinary.com/.../view-2.webp',
+      technologies: 'React, Node.js, MongoDB', coverImage: '/projects/eval-apro/cover.webp',
+      gallery: '/projects/eval-apro/view-1.webp\nhttps://res.cloudinary.com/.../view-2.webp',
       liveUrl: 'https://project.example.com', repoUrl: 'https://github.com/user/repository',
     },
     statuses: { planned: 'Planned', 'in-progress': 'In progress', completed: 'Completed', archived: 'Archived' },
@@ -257,7 +257,7 @@ function ProjectEditor({ labels, mode }) {
             </Field>
           </div>
           <Field hint={labels.hints.technologies} label={labels.fields.technologies}><input name="technologies" onChange={handleChange} placeholder={labels.placeholders.technologies} value={form.technologies} /></Field>
-          <Field label={labels.fields.coverImage}><input name="coverImage" onChange={handleChange} placeholder={labels.placeholders.coverImage} type="url" value={form.coverImage} /></Field>
+          <Field label={labels.fields.coverImage}><input name="coverImage" onChange={handleChange} placeholder={labels.placeholders.coverImage} value={form.coverImage} /></Field>
           <Field hint={labels.hints.gallery} label={labels.fields.gallery}><textarea name="gallery" onChange={handleChange} placeholder={labels.placeholders.gallery} rows="4" value={form.gallery} /></Field>
           <div className="form-grid">
             <Field label={labels.fields.liveUrl}><input name="liveUrl" onChange={handleChange} placeholder={labels.placeholders.liveUrl} type="url" value={form.liveUrl} /></Field>

@@ -12,6 +12,13 @@ const isHttpUrl = (value) => {
   }
 };
 
+const isPublicAssetPath = (value) => (
+  typeof value === 'string' &&
+  /^\/(?!\/)[A-Za-z0-9._~!$&'()*+,;=:@/-]+$/.test(value)
+);
+
+const isHttpUrlOrPublicAssetPath = (value) => isHttpUrl(value) || isPublicAssetPath(value);
+
 export const rules = {
   required:
     (label) =>
@@ -51,6 +58,12 @@ export const rules = {
     (label) =>
     (value) =>
       !isEmpty(value) && !isHttpUrl(value) ? `${label} must be a valid HTTP or HTTPS URL` : null,
+  publicImage:
+    (label) =>
+    (value) =>
+      !isEmpty(value) && !isHttpUrlOrPublicAssetPath(value)
+        ? `${label} must be a valid HTTP or HTTPS URL or a public asset path`
+        : null,
   date:
     (label) =>
     (value) =>
@@ -69,6 +82,14 @@ export const rules = {
       !isEmpty(value) &&
       (!Array.isArray(value) || value.some((item) => typeof item !== 'string' || !isHttpUrl(item)))
         ? `${label} must be an array of valid HTTP or HTTPS URLs`
+        : null,
+  arrayOfPublicImages:
+    (label) =>
+    (value) =>
+      !isEmpty(value) &&
+      (!Array.isArray(value) ||
+        value.some((item) => typeof item !== 'string' || !isHttpUrlOrPublicAssetPath(item)))
+        ? `${label} must be an array of valid HTTP or HTTPS URLs or public asset paths`
         : null,
   maxItems:
     (label, max) =>

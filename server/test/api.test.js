@@ -708,8 +708,8 @@ describe('Backend API', { concurrency: false }, () => {
         slug: 'Mi Proyecto Técnico',
         summary: 'API for portfolio content.',
         description: 'A tested Express and MongoDB API for portfolio content.',
-        coverImage: 'https://example.com/cover.jpg',
-        gallery: ['https://example.com/one.jpg', 'https://example.com/one.jpg'],
+        coverImage: '/projects/eval-apro/cover.webp',
+        gallery: ['/projects/eval-apro/dashboard.webp', '/projects/eval-apro/dashboard.webp'],
         technologies: ['Node.js', 'MongoDB', 'Node.js'],
         category: 'FullStack',
         featured: true,
@@ -723,8 +723,9 @@ describe('Backend API', { concurrency: false }, () => {
     assert.equal(created.response.status, 201);
     assert.equal(created.body.data.project.slug, 'mi-proyecto-tecnico');
     assert.equal(created.body.data.project.category, 'fullstack');
+    assert.equal(created.body.data.project.coverImage, '/projects/eval-apro/cover.webp');
     assert.deepEqual(created.body.data.project.technologies, ['Node.js', 'MongoDB']);
-    assert.deepEqual(created.body.data.project.gallery, ['https://example.com/one.jpg']);
+    assert.deepEqual(created.body.data.project.gallery, ['/projects/eval-apro/dashboard.webp']);
 
     const bySlug = await request('/api/projects/MI-PROYECTO-TECNICO');
 
