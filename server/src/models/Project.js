@@ -31,6 +31,31 @@ const projectSchema = new mongoose.Schema(
       trim: true,
       maxlength: [10000, 'Project description cannot exceed 10000 characters'],
     },
+    role: {
+      type: String,
+      trim: true,
+      maxlength: [160, 'Project role cannot exceed 160 characters'],
+      default: '',
+    },
+    challenge: {
+      type: String,
+      trim: true,
+      maxlength: [1200, 'Project challenge cannot exceed 1200 characters'],
+      default: '',
+    },
+    solution: {
+      type: String,
+      trim: true,
+      maxlength: [1200, 'Project solution cannot exceed 1200 characters'],
+      default: '',
+    },
+    results: [
+      {
+        type: String,
+        trim: true,
+        maxlength: [180, 'Project result cannot exceed 180 characters'],
+      },
+    ],
     coverImage: {
       type: String,
       trim: true,
@@ -88,7 +113,7 @@ const projectSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-projectSchema.index({ title: 'text', summary: 'text', description: 'text' });
+projectSchema.index({ title: 'text', summary: 'text', description: 'text', role: 'text', challenge: 'text', solution: 'text', results: 'text' });
 projectSchema.index({ featured: 1, createdAt: -1 });
 projectSchema.index({ category: 1 });
 
@@ -105,6 +130,10 @@ projectSchema.pre('validate', function setSlug(next) {
 
   if (this.isModified('gallery')) {
     this.gallery = [...new Set(this.gallery.map((item) => item.trim()).filter(Boolean))];
+  }
+
+  if (this.isModified('results')) {
+    this.results = [...new Set(this.results.map((item) => item.trim()).filter(Boolean))];
   }
 
   next();

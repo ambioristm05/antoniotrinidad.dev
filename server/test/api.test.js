@@ -708,6 +708,10 @@ describe('Backend API', { concurrency: false }, () => {
         slug: 'Mi Proyecto Técnico',
         summary: 'API for portfolio content.',
         description: 'A tested Express and MongoDB API for portfolio content.',
+        role: ' Fullstack developer ',
+        challenge: 'Centralize scattered academic evaluations.',
+        solution: 'A role-based workflow for instruments, results and reports.',
+        results: [' Printable reports ', 'Student dashboard', 'Printable reports'],
         coverImage: '/projects/eval-apro/cover.webp',
         gallery: ['/projects/eval-apro/dashboard.webp', '/projects/eval-apro/dashboard.webp'],
         technologies: ['Node.js', 'MongoDB', 'Node.js'],
@@ -723,6 +727,10 @@ describe('Backend API', { concurrency: false }, () => {
     assert.equal(created.response.status, 201);
     assert.equal(created.body.data.project.slug, 'mi-proyecto-tecnico');
     assert.equal(created.body.data.project.category, 'fullstack');
+    assert.equal(created.body.data.project.role, 'Fullstack developer');
+    assert.equal(created.body.data.project.challenge, 'Centralize scattered academic evaluations.');
+    assert.equal(created.body.data.project.solution, 'A role-based workflow for instruments, results and reports.');
+    assert.deepEqual(created.body.data.project.results, ['Printable reports', 'Student dashboard']);
     assert.equal(created.body.data.project.coverImage, '/projects/eval-apro/cover.webp');
     assert.deepEqual(created.body.data.project.technologies, ['Node.js', 'MongoDB']);
     assert.deepEqual(created.body.data.project.gallery, ['/projects/eval-apro/dashboard.webp']);
@@ -771,6 +779,7 @@ describe('Backend API', { concurrency: false }, () => {
         title: 'Gamma Node',
         summary: 'Node backend service.',
         description: 'A planned backend project.',
+        challenge: 'Coordinate rubric-driven feedback across roles.',
         category: 'backend',
         status: 'planned',
       },
@@ -803,6 +812,12 @@ describe('Backend API', { concurrency: false }, () => {
     assert.equal(literalSearch.response.status, 200);
     assert.equal(literalSearch.body.results, 1);
     assert.equal(literalSearch.body.data.projects[0].title, 'Regex [Demo]');
+
+    const caseStudySearch = await request('/api/projects?search=rubric-driven');
+
+    assert.equal(caseStudySearch.response.status, 200);
+    assert.equal(caseStudySearch.body.results, 1);
+    assert.equal(caseStudySearch.body.data.projects[0].title, 'Gamma Node');
 
     const invalidQuery = await request('/api/projects?featured=yes&status=unknown&sort=password');
 

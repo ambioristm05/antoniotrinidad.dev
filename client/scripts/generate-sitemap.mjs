@@ -32,6 +32,14 @@ const toEntry = (siteUrl, route, lastModified) => ({
   lastmod: lastModified ? new Date(lastModified).toISOString().slice(0, 10) : undefined,
 });
 
+const hasPathPrefix = (entry, prefix) => {
+  try {
+    return new URL(entry.loc).pathname.startsWith(prefix);
+  } catch {
+    return false;
+  }
+};
+
 const readExistingEntries = async (sitemapPath) => {
   try {
     const xml = await readFile(sitemapPath, 'utf8');
@@ -67,11 +75,13 @@ const existingDynamicEntries = (await readExistingEntries(sitemapPath))
 const dynamicRequests = [
   {
     label: 'projects',
+    pathPrefix: '/projects/',
     request: fetchItems(`${apiUrl}/projects?status=completed&limit=100&sort=-updatedAt`, 'projects'),
     toEntries: (projects) => projects.map((project) => toEntry(siteUrl, `/projects/${encodeURIComponent(project.slug)}`, project.updatedAt)),
   },
   {
     label: 'posts',
+    pathPrefix: '/blog/',
     request: fetchItems(`${apiUrl}/posts?limit=100&sort=-updatedAt`, 'posts'),
     toEntries: (posts) => posts.map((post) => toEntry(siteUrl, `/blog/${encodeURIComponent(post.slug)}`, post.updatedAt || post.publishedAt)),
   },
@@ -80,26 +90,28 @@ const dynamicRequests = [
 const dynamicResults = await Promise.allSettled(dynamicRequests.map(({ request }) => request));
 const dynamicEntries = [];
 const failures = [];
+const dynamicPathPrefixes = dynamicRequests.map(({ pathPrefix }) => pathPrefix);
+const uncategorizedExistingEntries = existingDynamicEntries
+  .filter((entry) => !dynamicPathPrefixes.some((prefix) => hasPathPrefix(entry, prefix)));
 
 dynamicResults.forEach((result, index) => {
-  const { label, toEntries } = dynamicRequests[index];
+  const { label, pathPrefix, toEntries } = dynamicRequests[index];
 
   if (result.status === 'fulfilled') {
     dynamicEntries.push(...toEntries(result.value));
   } else {
-    failures.push(`${label}: ${result.reason.message}`);
+    const fallbackEntries = existingDynamicEntries.filter((entry) => hasPathPrefix(entry, pathPrefix));
+
+    dynamicEntries.push(...fallbackEntries);
+    failures.push(`${label}: ${result.reason.message}${fallbackEntries.length > 0 ? `; preserved ${fallbackEntries.length} existing ${label} routes` : ''}`);
   }
 });
 
-if (failures.length > 0 && existingDynamicEntries.length > 0) {
-  console.warn(`Sitemap dynamic API unavailable; preserving ${existingDynamicEntries.length} existing dynamic routes. ${failures.join('; ')}`);
+if (failures.length > 0) {
+  console.warn(`Sitemap dynamic API partially unavailable. ${failures.join('; ')}`);
 }
 
-if (failures.length > 0 && existingDynamicEntries.length === 0) {
-  console.warn(`Sitemap generated with static routes only. ${failures.join('; ')}`);
-}
-
-entries.push(...(dynamicEntries.length > 0 ? dynamicEntries : existingDynamicEntries));
+entries.push(...dynamicEntries, ...uncategorizedExistingEntries);
 
 const body = entries
   .map(({ loc, lastmod }) => `  <url>\n    <loc>${escapeXml(loc)}</loc>${lastmod ? `\n    <lastmod>${lastmod}</lastmod>` : ''}\n  </url>`)

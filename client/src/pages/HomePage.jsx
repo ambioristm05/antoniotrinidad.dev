@@ -13,14 +13,22 @@ import { env } from '../config/env.js';
 
 export default function HomePage() {
   const { home, meta, profile, skills } = useSiteContent();
-  const { data, error, retry, status } = useApiResource(({ signal }) =>
-    Promise.all([api.getFeaturedProjects({ signal }), api.getFeaturedPosts({ signal })]).then(([projects, posts]) => ({
-      projects: projects.data.projects.slice(0, 4),
-      posts: posts.data.posts.slice(0, 3),
-    })),
+  const {
+    data: featuredProjects = [],
+    error: projectsError,
+    retry: retryProjects,
+    status: projectsStatus,
+  } = useApiResource(({ signal }) =>
+    api.getFeaturedProjects({ signal }).then((response) => response.data.projects.slice(0, 4)),
   );
-  const featuredProjects = data?.projects ?? [];
-  const featuredPosts = data?.posts ?? [];
+  const {
+    data: featuredPosts = [],
+    error: postsError,
+    retry: retryPosts,
+    status: postsStatus,
+  } = useApiResource(({ signal }) =>
+    api.getFeaturedPosts({ signal }).then((response) => response.data.posts.slice(0, 3)),
+  );
   const feedbackCopy = meta.code === 'es'
     ? { loading: 'Cargando contenido...', error: 'No se pudo cargar el contenido destacado.', retry: 'Reintentar', noProjects: 'Todavía no hay proyectos destacados.', noPosts: 'Todavía no hay artículos destacados.' }
     : { loading: 'Loading content...', error: 'Featured content could not be loaded.', retry: 'Retry', noProjects: 'There are no featured projects yet.', noPosts: 'There are no featured articles yet.' };
@@ -84,8 +92,8 @@ export default function HomePage() {
           title={home.featuredProjects.title}
           description={home.featuredProjects.description}
         />
-        {status === 'loading' || status === 'error' ? (
-          <ContentFeedback copy={feedbackCopy} error={error} loading={status === 'loading'} onRetry={retry} />
+        {projectsStatus === 'loading' || projectsStatus === 'error' ? (
+          <ContentFeedback copy={feedbackCopy} error={projectsError} loading={projectsStatus === 'loading'} onRetry={retryProjects} />
         ) : featuredProjects.length === 0 ? (
           <p className="content-feedback">{feedbackCopy.noProjects}</p>
         ) : (
@@ -119,8 +127,8 @@ export default function HomePage() {
           title={home.blog.title}
           description={home.blog.description}
         />
-        {status === 'loading' || status === 'error' ? (
-          <ContentFeedback copy={feedbackCopy} error={error} loading={status === 'loading'} onRetry={retry} />
+        {postsStatus === 'loading' || postsStatus === 'error' ? (
+          <ContentFeedback copy={feedbackCopy} error={postsError} loading={postsStatus === 'loading'} onRetry={retryPosts} />
         ) : featuredPosts.length === 0 ? (
           <p className="content-feedback">{feedbackCopy.noPosts}</p>
         ) : (

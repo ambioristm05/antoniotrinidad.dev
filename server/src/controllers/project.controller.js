@@ -11,6 +11,10 @@ const projectFields = [
   'slug',
   'summary',
   'description',
+  'role',
+  'challenge',
+  'solution',
+  'results',
   'coverImage',
   'gallery',
   'technologies',
@@ -37,6 +41,10 @@ export const getProjects = asyncHandler(async (req, res) => {
       { title: buildTextRegex(req.query.search) },
       { summary: buildTextRegex(req.query.search) },
       { description: buildTextRegex(req.query.search) },
+      { role: buildTextRegex(req.query.search) },
+      { challenge: buildTextRegex(req.query.search) },
+      { solution: buildTextRegex(req.query.search) },
+      { results: buildTextRegex(req.query.search) },
       { technologies: buildTextRegex(req.query.search) },
     ];
   }

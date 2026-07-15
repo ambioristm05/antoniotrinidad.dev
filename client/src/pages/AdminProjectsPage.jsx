@@ -21,14 +21,19 @@ const copyByLanguage = {
     columns: ['Título', 'Categoría', 'Estado', 'Destacado', 'Acciones'], yes: 'Sí', no: 'No',
     fields: {
       title: 'Título', slug: 'Slug (opcional)', summary: 'Resumen', description: 'Descripción', category: 'Categoría',
+      role: 'Rol en el proyecto', challenge: 'Reto', solution: 'Solución', results: 'Resultados',
       status: 'Estado', featured: 'Proyecto destacado', technologies: 'Tecnologías', coverImage: 'Imagen de portada',
       gallery: 'Galería', liveUrl: 'URL del proyecto', repoUrl: 'URL del repositorio', startDate: 'Fecha de inicio', endDate: 'Fecha de fin',
     },
-    hints: { technologies: 'Separadas por comas', gallery: 'Una URL o ruta pública por línea' },
+    hints: { technologies: 'Separadas por comas', results: 'Un resultado por línea', gallery: 'Una URL o ruta pública por línea' },
     placeholders: {
       title: 'Ej. Plataforma de gestión de proyectos', slug: 'plataforma-gestion-proyectos',
       summary: 'Ej. Aplicación MERN para organizar equipos y entregas.',
       description: 'Describe el problema, la solución y los resultados del proyecto...', category: 'Ej. Aplicación web',
+      role: 'Ej. Diseño UX, frontend, backend y despliegue',
+      challenge: 'Ej. Centralizar evaluaciones y reportes que antes dependían de documentos dispersos.',
+      solution: 'Ej. Diseñé un flujo por roles con instrumentos, evaluaciones, resultados y reportes conectados.',
+      results: 'Flujo académico centralizado\nReportes imprimibles\nSeguimiento por rol',
       technologies: 'React, Node.js, MongoDB', coverImage: '/projects/eval-apro/portada.webp',
       gallery: '/projects/eval-apro/vista-1.webp\nhttps://res.cloudinary.com/.../vista-2.webp',
       liveUrl: 'https://proyecto.example.com', repoUrl: 'https://github.com/usuario/repositorio',
@@ -45,14 +50,19 @@ const copyByLanguage = {
     columns: ['Title', 'Category', 'Status', 'Featured', 'Actions'], yes: 'Yes', no: 'No',
     fields: {
       title: 'Title', slug: 'Slug (optional)', summary: 'Summary', description: 'Description', category: 'Category',
+      role: 'Project role', challenge: 'Challenge', solution: 'Solution', results: 'Results',
       status: 'Status', featured: 'Featured project', technologies: 'Technologies', coverImage: 'Cover image',
       gallery: 'Gallery', liveUrl: 'Live URL', repoUrl: 'Repository URL', startDate: 'Start date', endDate: 'End date',
     },
-    hints: { technologies: 'Comma separated', gallery: 'One URL or public path per line' },
+    hints: { technologies: 'Comma separated', results: 'One result per line', gallery: 'One URL or public path per line' },
     placeholders: {
       title: 'E.g. Project management platform', slug: 'project-management-platform',
       summary: 'E.g. MERN application for organizing teams and deliveries.',
       description: 'Describe the problem, solution and project results...', category: 'E.g. Web application',
+      role: 'E.g. UX design, frontend, backend and deployment',
+      challenge: 'E.g. Centralize evaluations and reports that previously depended on scattered documents.',
+      solution: 'E.g. I designed a role-based flow with connected instruments, evaluations, results and reports.',
+      results: 'Centralized academic flow\nPrintable reports\nRole-based tracking',
       technologies: 'React, Node.js, MongoDB', coverImage: '/projects/eval-apro/cover.webp',
       gallery: '/projects/eval-apro/view-1.webp\nhttps://res.cloudinary.com/.../view-2.webp',
       liveUrl: 'https://project.example.com', repoUrl: 'https://github.com/user/repository',
@@ -245,6 +255,12 @@ function ProjectEditor({ labels, mode }) {
           </div>
           <Field label={labels.fields.summary}><textarea maxLength="240" name="summary" onChange={handleChange} placeholder={labels.placeholders.summary} required rows="3" value={form.summary} /></Field>
           <Field label={labels.fields.description}><textarea maxLength="10000" name="description" onChange={handleChange} placeholder={labels.placeholders.description} required rows="9" value={form.description} /></Field>
+          <Field label={labels.fields.role}><input maxLength="160" name="role" onChange={handleChange} placeholder={labels.placeholders.role} value={form.role} /></Field>
+          <div className="form-grid">
+            <Field label={labels.fields.challenge}><textarea maxLength="1200" name="challenge" onChange={handleChange} placeholder={labels.placeholders.challenge} rows="5" value={form.challenge} /></Field>
+            <Field label={labels.fields.solution}><textarea maxLength="1200" name="solution" onChange={handleChange} placeholder={labels.placeholders.solution} rows="5" value={form.solution} /></Field>
+          </div>
+          <Field hint={labels.hints.results} label={labels.fields.results}><textarea name="results" onChange={handleChange} placeholder={labels.placeholders.results} rows="4" value={form.results} /></Field>
           <div className="form-grid">
             <Field label={labels.fields.category}>
               <input list="project-categories" maxLength="80" name="category" onChange={handleChange} placeholder={labels.placeholders.category} value={form.category} />

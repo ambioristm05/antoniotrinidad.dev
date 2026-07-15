@@ -14,8 +14,8 @@ export default function ProjectDetailPage() {
   const { data: project, error, retry, status } = useApiResource(({ signal }) =>
     api.getProject(slug, { signal }).then((response) => response.data.project), slug);
   const copy = meta.code === 'es'
-    ? { loading: 'Cargando proyecto...', error: 'No se pudo cargar el proyecto.', retry: 'Reintentar', about: 'Sobre el proyecto', dates: 'Periodo', gallery: 'Galería', galleryCount: 'capturas' }
-    : { loading: 'Loading project...', error: 'The project could not be loaded.', retry: 'Retry', about: 'About the project', dates: 'Timeline', gallery: 'Gallery', galleryCount: 'screenshots' };
+    ? { loading: 'Cargando proyecto...', error: 'No se pudo cargar el proyecto.', retry: 'Reintentar', about: 'Sobre el proyecto', role: 'Rol', challenge: 'Reto', solution: 'Solución', results: 'Resultados', dates: 'Periodo', gallery: 'Galería', galleryCount: 'capturas' }
+    : { loading: 'Loading project...', error: 'The project could not be loaded.', retry: 'Retry', about: 'About the project', role: 'Role', challenge: 'Challenge', solution: 'Solution', results: 'Results', dates: 'Timeline', gallery: 'Gallery', galleryCount: 'screenshots' };
   usePageMetadata({
     title: project?.title ?? projectsPage.eyebrow,
     description: project?.summary ?? projectsPage.description,
@@ -55,6 +55,38 @@ export default function ProjectDetailPage() {
         <h2>{copy.about}</h2>
         <p>{project.description}</p>
       </div>
+      {(project.role || project.challenge || project.solution || (project.results ?? []).length > 0) && (
+        <section className="project-case-study">
+          {project.role && (
+            <div className="project-case-study__role">
+              <h2>{copy.role}</h2>
+              <p>{project.role}</p>
+            </div>
+          )}
+          <div className="project-case-study__grid">
+            {project.challenge && (
+              <article>
+                <h2>{copy.challenge}</h2>
+                <p>{project.challenge}</p>
+              </article>
+            )}
+            {project.solution && (
+              <article>
+                <h2>{copy.solution}</h2>
+                <p>{project.solution}</p>
+              </article>
+            )}
+          </div>
+          {(project.results ?? []).length > 0 && (
+            <div className="project-results">
+              <h2>{copy.results}</h2>
+              <ul>
+                {project.results.map((result) => <li key={result}>{result}</li>)}
+              </ul>
+            </div>
+          )}
+        </section>
+      )}
       {(project.startDate || project.endDate) && (
         <section className="project-dates"><h2>{copy.dates}</h2><p>{project.startDate ? formatDate(project.startDate, meta.dateLocale) : '—'} – {project.endDate ? formatDate(project.endDate, meta.dateLocale) : '—'}</p></section>
       )}
