@@ -8,7 +8,7 @@
     "dev": "vite",
     "sitemap": "node scripts/generate-sitemap.mjs",
     "prebuild": "node scripts/generate-sitemap.mjs",
-    "build": "vite build",
+    "build": "vite build --configLoader runner",
     "postbuild": "node scripts/check-bundle.mjs",
     "preview": "vite preview",
     "check": "node --check vite.config.js && node --test",

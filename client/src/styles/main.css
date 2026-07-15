@@ -2153,17 +2153,63 @@ th {
   white-space: pre-wrap;
 }
 
+.project-gallery-section {
+  margin-top: 44px;
+}
+
+.project-gallery-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.project-gallery-heading h2 {
+  margin: 0;
+}
+
+.project-gallery-heading span {
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+
 .project-gallery {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 16px;
+  gap: 18px;
+}
+
+.project-gallery__item {
+  position: relative;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+  box-shadow: var(--shadow-soft);
+}
+
+.project-gallery__item:first-child {
+  grid-column: 1 / -1;
+}
+
+.project-gallery__item::before {
+  content: "";
+  display: block;
+  height: 10px;
+  border-bottom: 1px solid var(--line);
+  background: linear-gradient(90deg, rgba(47, 125, 87, 0.22), rgba(47, 125, 87, 0.06));
 }
 
 .project-gallery img {
+  display: block;
   width: 100%;
-  aspect-ratio: 16 / 10;
-  border-radius: var(--radius);
-  object-fit: cover;
+  aspect-ratio: 16 / 9;
+  padding: 8px;
+  object-fit: contain;
 }
 
 .markdown-body > :first-child {
@@ -2393,6 +2439,16 @@ th {
   .project-card {
     --card-media-height: 218px;
     --card-body-height: 210px;
+  }
+
+  .project-gallery-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .project-gallery {
+    grid-template-columns: 1fr;
   }
 
   .hero-visual {
