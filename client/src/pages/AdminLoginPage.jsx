@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 import BrandLogo from '../components/BrandLogo.jsx';
 import { useAuth } from '../contexts/AuthContext.jsx';
@@ -9,6 +10,7 @@ import { usePageMetadata } from '../hooks/usePageMetadata.js';
 export default function AdminLoginPage() {
   const [form, setForm] = useState({ email: '', password: '' });
   const [error, setError] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const { isAuthenticated, login, status } = useAuth();
   const { meta } = useSiteContent();
   const location = useLocation();
@@ -23,8 +25,11 @@ export default function AdminLoginPage() {
           description: 'Inicia sesion para administrar proyectos, posts y mensajes.',
           password: 'Password',
           passwordPlaceholder: 'Tu password',
+          showPassword: 'Mostrar password',
+          hidePassword: 'Ocultar password',
           submit: 'Entrar',
           submitting: 'Verificando...',
+          forgotPassword: 'Olvide mi password',
           invalid: 'El email o la contraseña no son correctos.',
           genericError: 'No fue posible iniciar sesion. Intenta nuevamente.',
         }
@@ -34,8 +39,11 @@ export default function AdminLoginPage() {
           description: 'Log in to manage projects, posts and messages.',
           password: 'Password',
           passwordPlaceholder: 'Your password',
+          showPassword: 'Show password',
+          hidePassword: 'Hide password',
           submit: 'Log in',
           submitting: 'Checking...',
+          forgotPassword: 'Forgot your password?',
           invalid: 'The email or password is incorrect.',
           genericError: 'Unable to log in. Please try again.',
         };
@@ -85,21 +93,35 @@ export default function AdminLoginPage() {
           </label>
           <label>
             {labels.password}
-            <input
-              name="password"
-              type="password"
-              value={form.password}
-              onChange={handleChange}
-              autoComplete="current-password"
-              minLength="8"
-              placeholder={labels.passwordPlaceholder}
-              required
-            />
+            <span className="password-field">
+              <input
+                name="password"
+                type={showPassword ? 'text' : 'password'}
+                value={form.password}
+                onChange={handleChange}
+                autoComplete="current-password"
+                minLength="8"
+                placeholder={labels.passwordPlaceholder}
+                required
+              />
+              <button
+                className="password-field__toggle"
+                type="button"
+                aria-label={showPassword ? labels.hidePassword : labels.showPassword}
+                aria-pressed={showPassword}
+                onClick={() => setShowPassword((current) => !current)}
+              >
+                {showPassword ? <EyeOff aria-hidden="true" size={18} /> : <Eye aria-hidden="true" size={18} />}
+              </button>
+            </span>
           </label>
           {error ? <p className="form-error" role="alert">{error}</p> : null}
           <button className="button button--primary" type="submit" disabled={status === 'checking'}>
             {status === 'checking' ? labels.submitting : labels.submit}
           </button>
+          <Link className="auth-link" to="/admin/reset-password">
+            {labels.forgotPassword}
+          </Link>
         </form>
       </section>
     </main>

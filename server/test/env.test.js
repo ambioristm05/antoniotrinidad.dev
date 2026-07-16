@@ -17,6 +17,10 @@ const validEnv = {
   ADMIN_NAME: '',
   ADMIN_EMAIL: '',
   ADMIN_PASSWORD: '',
+  CLOUDINARY_CLOUD_NAME: '',
+  CLOUDINARY_API_KEY: '',
+  CLOUDINARY_API_SECRET: '',
+  CLOUDINARY_FOLDER: '',
 };
 
 const loadEnv = (overrides = {}) =>
@@ -69,6 +73,17 @@ describe('Environment configuration', () => {
 
     assert.equal(result.status, 1);
     assert.match(result.stderr, /TRUST_PROXY must be false, 0 or a positive integer/);
+  });
+
+  it('requires complete Cloudinary credentials when image uploads are configured', () => {
+    const result = loadEnv({
+      CLOUDINARY_CLOUD_NAME: 'demo',
+      CLOUDINARY_API_KEY: '',
+      CLOUDINARY_API_SECRET: 'secret',
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET must be configured together/);
   });
 
   it('requires stronger secrets and HTTPS in production', () => {

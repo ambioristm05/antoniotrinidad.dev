@@ -2,6 +2,7 @@ import { ArrowLeft, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
+import ImageUploadField from '../components/ImageUploadField.jsx';
 import { usePreferences } from '../contexts/PreferencesContext.jsx';
 import { api } from '../services/api.js';
 import {
@@ -25,7 +26,15 @@ const copyByLanguage = {
       status: 'Estado', featured: 'Proyecto destacado', technologies: 'Tecnologías', coverImage: 'Imagen de portada',
       gallery: 'Galería', liveUrl: 'URL del proyecto', repoUrl: 'URL del repositorio', startDate: 'Fecha de inicio', endDate: 'Fecha de fin',
     },
-    hints: { technologies: 'Separadas por comas', results: 'Un resultado por línea', gallery: 'Una URL o ruta pública por línea' },
+    hints: { technologies: 'Separadas por comas', results: 'Un resultado por línea', coverImage: 'Pega una URL/ruta pública o sube una imagen a Cloudinary.', gallery: 'Una URL o ruta pública por línea. Al subir una imagen se agregará al final.' },
+    imageUpload: {
+      upload: 'Subir imagen',
+      uploading: 'Subiendo...',
+      uploadError: 'No se pudo subir la imagen.',
+      noFile: 'Selecciona una imagen.',
+      invalidType: 'Usa PNG, JPG, WEBP o GIF.',
+      tooLarge: 'La imagen no puede superar 5 MB.',
+    },
     placeholders: {
       title: 'Ej. Plataforma de gestión de proyectos', slug: 'plataforma-gestion-proyectos',
       summary: 'Ej. Aplicación MERN para organizar equipos y entregas.',
@@ -54,7 +63,15 @@ const copyByLanguage = {
       status: 'Status', featured: 'Featured project', technologies: 'Technologies', coverImage: 'Cover image',
       gallery: 'Gallery', liveUrl: 'Live URL', repoUrl: 'Repository URL', startDate: 'Start date', endDate: 'End date',
     },
-    hints: { technologies: 'Comma separated', results: 'One result per line', gallery: 'One URL or public path per line' },
+    hints: { technologies: 'Comma separated', results: 'One result per line', coverImage: 'Paste a URL/public path or upload an image to Cloudinary.', gallery: 'One URL or public path per line. Uploaded images are appended.' },
+    imageUpload: {
+      upload: 'Upload image',
+      uploading: 'Uploading...',
+      uploadError: 'The image could not be uploaded.',
+      noFile: 'Select an image.',
+      invalidType: 'Use PNG, JPG, WEBP or GIF.',
+      tooLarge: 'Images cannot exceed 5 MB.',
+    },
     placeholders: {
       title: 'E.g. Project management platform', slug: 'project-management-platform',
       summary: 'E.g. MERN application for organizing teams and deliveries.',
@@ -273,8 +290,8 @@ function ProjectEditor({ labels, mode }) {
             </Field>
           </div>
           <Field hint={labels.hints.technologies} label={labels.fields.technologies}><input name="technologies" onChange={handleChange} placeholder={labels.placeholders.technologies} value={form.technologies} /></Field>
-          <Field label={labels.fields.coverImage}><input name="coverImage" onChange={handleChange} placeholder={labels.placeholders.coverImage} value={form.coverImage} /></Field>
-          <Field hint={labels.hints.gallery} label={labels.fields.gallery}><textarea name="gallery" onChange={handleChange} placeholder={labels.placeholders.gallery} rows="4" value={form.gallery} /></Field>
+          <ImageUploadField folder="projects" hint={labels.hints.coverImage} label={labels.fields.coverImage} labels={labels.imageUpload} name="coverImage" onChange={handleChange} placeholder={labels.placeholders.coverImage} value={form.coverImage} />
+          <ImageUploadField folder="projects" hint={labels.hints.gallery} label={labels.fields.gallery} labels={labels.imageUpload} multiline name="gallery" onChange={handleChange} placeholder={labels.placeholders.gallery} rows={4} value={form.gallery} />
           <div className="form-grid">
             <Field label={labels.fields.liveUrl}><input name="liveUrl" onChange={handleChange} placeholder={labels.placeholders.liveUrl} type="url" value={form.liveUrl} /></Field>
             <Field label={labels.fields.repoUrl}><input name="repoUrl" onChange={handleChange} placeholder={labels.placeholders.repoUrl} type="url" value={form.repoUrl} /></Field>

@@ -3,7 +3,7 @@ import { useSiteContent } from '../hooks/useSiteContent.js';
 import { usePageMetadata } from '../hooks/usePageMetadata.js';
 
 export default function AboutPage() {
-  const { about, skills, timeline } = useSiteContent();
+  const { about, profile, skills, timeline } = useSiteContent();
   usePageMetadata({ title: about.eyebrow, description: about.description, path: '/about' });
 
   return (
@@ -19,6 +19,9 @@ export default function AboutPage() {
           {about.paragraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
+          <a className="button button--primary resume-cta" href={profile.resumeUrl} download>
+            {about.resumeAction}
+          </a>
           <div className="skill-cloud">
             {skills.map((skill) => (
               <span key={skill.id}>{skill.label}</span>

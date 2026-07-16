@@ -1028,6 +1028,10 @@ button:focus-visible {
   line-height: 1.8;
 }
 
+.resume-cta {
+  margin: 8px 0 20px;
+}
+
 .timeline {
   display: grid;
   gap: 14px;
@@ -1396,6 +1400,60 @@ textarea {
 input {
   min-height: 46px;
   padding: 0 13px;
+}
+
+.password-field {
+  position: relative;
+  display: block;
+}
+
+.password-field input {
+  padding-right: 48px;
+}
+
+.password-field__toggle {
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+}
+
+.password-field__toggle:hover,
+.password-field__toggle:focus-visible {
+  background: rgba(20, 107, 87, 0.1);
+  color: var(--green);
+}
+
+.password-field__toggle:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+.auth-link,
+.auth-dev-link {
+  justify-self: center;
+  color: var(--green);
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.auth-dev-link {
+  justify-self: stretch;
+  overflow-wrap: anywhere;
+  padding: 12px 14px;
+  border: 1px solid rgba(20, 107, 87, 0.22);
+  border-radius: var(--radius);
+  background: rgba(20, 107, 87, 0.08);
+  text-align: center;
+  text-decoration: none;
 }
 
 select {
@@ -1833,6 +1891,58 @@ textarea {
 .field-hint {
   color: var(--muted);
   font-weight: 650;
+}
+
+.field-error {
+  color: #c53d3d;
+  font-weight: 800;
+}
+
+.image-upload-control {
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+}
+
+.image-upload-control input {
+  position: absolute;
+  inset: 0;
+  min-height: 0;
+  cursor: pointer;
+  opacity: 0;
+}
+
+.image-upload-control input:disabled {
+  cursor: not-allowed;
+}
+
+.image-upload-control__status {
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 8px;
+  padding: 0 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--ink);
+  font-weight: 850;
+}
+
+.image-upload-control:hover .image-upload-control__status,
+.image-upload-control:focus-within .image-upload-control__status {
+  border-color: var(--green);
+  color: var(--green);
+}
+
+.image-upload-preview {
+  width: min(100%, 360px);
+  aspect-ratio: 16 / 9;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface-muted);
+  object-fit: cover;
 }
 
 .content-editor {

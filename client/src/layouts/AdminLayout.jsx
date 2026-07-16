@@ -15,8 +15,9 @@ export default function AdminLayout() {
     { label: admin.nav[0], to: '/admin' },
     { label: admin.nav[1], to: '/admin/projects' },
     { label: admin.nav[2], to: '/admin/posts' },
-    { label: admin.nav[3], to: '/admin/categories' },
-    { label: admin.nav[4], to: '/admin/messages' },
+    { label: admin.nav[3], to: '/admin/comments' },
+    { label: admin.nav[4], to: '/admin/categories' },
+    { label: admin.nav[5], to: '/admin/messages' },
   ];
 
   const handleLogout = async () => {

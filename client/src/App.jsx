@@ -7,12 +7,14 @@ import HomePage from './pages/HomePage.jsx';
 
 const AboutPage = lazy(() => import('./pages/AboutPage.jsx'));
 const AdminCategoriesPage = lazy(() => import('./pages/AdminCategoriesPage.jsx'));
+const AdminCommentsPage = lazy(() => import('./pages/AdminCommentsPage.jsx'));
 const AdminDashboardPage = lazy(() => import('./pages/AdminDashboardPage.jsx'));
 const AdminLayout = lazy(() => import('./layouts/AdminLayout.jsx'));
 const AdminLoginPage = lazy(() => import('./pages/AdminLoginPage.jsx'));
 const AdminMessagesPage = lazy(() => import('./pages/AdminMessagesPage.jsx'));
 const AdminPostsPage = lazy(() => import('./pages/AdminPostsPage.jsx'));
 const AdminProjectsPage = lazy(() => import('./pages/AdminProjectsPage.jsx'));
+const AdminResetPasswordPage = lazy(() => import('./pages/AdminResetPasswordPage.jsx'));
 const BlogPage = lazy(() => import('./pages/BlogPage.jsx'));
 const ContactPage = lazy(() => import('./pages/ContactPage.jsx'));
 const NotFoundPage = lazy(() => import('./pages/NotFoundPage.jsx'));
@@ -42,6 +44,7 @@ export default function App() {
       </Route>
 
       <Route path="admin/login" element={routeElement(AdminLoginPage)} />
+      <Route path="admin/reset-password" element={routeElement(AdminResetPasswordPage)} />
       <Route element={<ProtectedRoute />}>
         <Route path="admin" element={routeElement(AdminLayout)}>
           <Route index element={routeElement(AdminDashboardPage)} />
@@ -51,6 +54,7 @@ export default function App() {
           <Route path="posts" element={routeElement(AdminPostsPage)} />
           <Route path="posts/new" element={routeElement(AdminPostsPage, { mode: 'new' })} />
           <Route path="posts/:id/edit" element={routeElement(AdminPostsPage, { mode: 'edit' })} />
+          <Route path="comments" element={routeElement(AdminCommentsPage)} />
           <Route path="categories" element={routeElement(AdminCategoriesPage)} />
           <Route path="messages" element={routeElement(AdminMessagesPage)} />
         </Route>

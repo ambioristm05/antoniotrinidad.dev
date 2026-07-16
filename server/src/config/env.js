@@ -46,6 +46,27 @@ const validateClientUrl = (value) => {
   }
 };
 
+const getOptionalEnv = (key) => process.env[key]?.trim() || '';
+
+const parseCloudinaryConfig = () => {
+  const cloudName = getOptionalEnv('CLOUDINARY_CLOUD_NAME');
+  const apiKey = getOptionalEnv('CLOUDINARY_API_KEY');
+  const apiSecret = getOptionalEnv('CLOUDINARY_API_SECRET');
+  const values = [cloudName, apiKey, apiSecret];
+
+  if (values.some(Boolean) && values.some((value) => !value)) {
+    throw new Error('CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET must be configured together');
+  }
+
+  return {
+    cloudName,
+    apiKey,
+    apiSecret,
+    folder: getOptionalEnv('CLOUDINARY_FOLDER') || 'antoniotrinidad-dev',
+    enabled: values.every(Boolean),
+  };
+};
+
 const parseTrustProxy = () => {
   const value = process.env.TRUST_PROXY?.trim();
 
@@ -64,6 +85,7 @@ const mongodbUri = getRequiredEnv('MONGODB_URI');
 const jwtSecret = getRequiredEnv('JWT_SECRET');
 const jwtExpiresIn = process.env.JWT_EXPIRES_IN?.trim() || '7d';
 const clientUrl = validateClientUrl(process.env.CLIENT_URL || 'http://localhost:5173');
+const cloudinary = parseCloudinaryConfig();
 
 if (!/^mongodb(?:\+srv)?:\/\//.test(mongodbUri)) {
   throw new Error('MONGODB_URI must start with mongodb:// or mongodb+srv://');
@@ -104,6 +126,7 @@ export const env = {
   adminName: process.env.ADMIN_NAME || 'Admin',
   adminEmail: process.env.ADMIN_EMAIL,
   adminPassword: process.env.ADMIN_PASSWORD,
+  cloudinary,
   get isDevelopment() {
     return this.nodeEnv === 'development';
   },

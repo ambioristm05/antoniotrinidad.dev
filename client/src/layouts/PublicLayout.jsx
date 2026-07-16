@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Languages, Menu, Moon, ShieldCheck, Sun, X } from 'lucide-react';
+import { Download, Languages, Menu, Moon, ShieldCheck, Sun, X } from 'lucide-react';
 import { Link, NavLink, Outlet, useLocation } from 'react-router-dom';
 
 import BrandLogo from '../components/BrandLogo.jsx';
@@ -117,6 +117,10 @@ export default function PublicLayout() {
           <a className="footer-link" href={profile.linkedin} target="_blank" rel="noreferrer">
             <LinkedInIcon />
             <span>LinkedIn</span>
+          </a>
+          <a className="footer-link" href={profile.resumeUrl} download>
+            <Download size={22} strokeWidth={2} aria-hidden="true" />
+            <span>{nav.resume}</span>
           </a>
           <NavLink className="footer-link" to="/privacy">
             <ShieldCheck size={22} strokeWidth={2} aria-hidden="true" />

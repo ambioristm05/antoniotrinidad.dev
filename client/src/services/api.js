@@ -11,8 +11,11 @@ const http = createHttpClient({
 export const api = {
   getHealth: () => http.get('/health'),
   login: (credentials) => http.post('/auth/login', credentials),
+  requestPasswordReset: (payload, options) => http.post('/auth/forgot-password', payload, options),
+  resetPassword: (payload, options) => http.post('/auth/reset-password', payload, options),
   logout: () => http.post('/auth/logout'),
   getMe: () => http.get('/auth/me'),
+  uploadImage: (payload, options) => http.post('/uploads/images', payload, options),
   getProjects: (query, options) => http.get('/projects', { ...options, query }),
   getFeaturedProjects: (options) => http.get('/projects/featured', options),
   getProject: (slug, options) => http.get(`/projects/${encodeURIComponent(slug)}`, options),
@@ -26,10 +29,15 @@ export const api = {
   getPost: (slug, options) => http.get(`/posts/${encodeURIComponent(slug)}`, options),
   getPostComments: (slug, query, options) =>
     http.get(`/posts/${encodeURIComponent(slug)}/comments`, { ...options, query }),
+  getAdminComments: (query, options) => http.get('/posts/admin/comments', { ...options, query }),
   createPostComment: (slug, payload, options) =>
     http.post(`/posts/${encodeURIComponent(slug)}/comments`, payload, options),
   createPostCommentReply: (slug, commentId, payload, options) =>
     http.post(`/posts/${encodeURIComponent(slug)}/comments/${encodeURIComponent(commentId)}/replies`, payload, options),
+  updateComment: (id, payload, options) =>
+    http.patch(`/posts/admin/comments/${encodeURIComponent(id)}`, payload, options),
+  deleteComment: (id, options) =>
+    http.delete(`/posts/admin/comments/${encodeURIComponent(id)}`, options),
   createPost: (payload, options) => http.post('/posts', payload, options),
   updatePost: (id, payload, options) =>
     http.patch(`/posts/${encodeURIComponent(id)}`, payload, options),

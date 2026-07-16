@@ -9,7 +9,6 @@ import { useSiteContent } from '../hooks/useSiteContent.js';
 import { usePageMetadata } from '../hooks/usePageMetadata.js';
 import { api } from '../services/api.js';
 import {
-  addComment,
   addReplyToComment,
   commentFormToPayload,
   defaultCommentAvatar,
@@ -46,6 +45,7 @@ export default function PostDetailPage() {
   const [comments, setComments] = useState([]);
   const [commentsStatus, setCommentsStatus] = useState('idle');
   const [commentsError, setCommentsError] = useState('');
+  const [commentNotice, setCommentNotice] = useState('');
   const [showAllComments, setShowAllComments] = useState(false);
   const [currentUser, setCurrentUser] = useState(() => getBrowserCommentUser(commentsCopy.guestName));
   const [commentForm, setCommentForm] = useState(emptyCommentForm);
@@ -54,8 +54,8 @@ export default function PostDetailPage() {
   const [sendingComment, setSendingComment] = useState(false);
   const [sendingReplyId, setSendingReplyId] = useState(null);
   const copy = meta.code === 'es'
-    ? { loading: 'Cargando artículo...', error: 'No se pudo cargar el artículo.', retry: 'Reintentar', commentsLoading: 'Cargando comentarios...', commentsError: 'No se pudieron cargar los comentarios.', emptyComments: 'Sé la primera persona en comentar este artículo.', submitError: 'No se pudo publicar. Inténtalo de nuevo.', namePlaceholder: 'Ej. María Santos', emailPlaceholder: 'maria@email.com', website: 'Sitio web' }
-    : { loading: 'Loading article...', error: 'The article could not be loaded.', retry: 'Retry', commentsLoading: 'Loading comments...', commentsError: 'Comments could not be loaded.', emptyComments: 'Be the first person to comment on this article.', submitError: 'Could not publish. Please try again.', namePlaceholder: 'e.g. Maria Santos', emailPlaceholder: 'maria@email.com', website: 'Website' };
+    ? { loading: 'Cargando artículo...', error: 'No se pudo cargar el artículo.', retry: 'Reintentar', commentsLoading: 'Cargando comentarios...', commentsError: 'No se pudieron cargar los comentarios.', emptyComments: 'Sé la primera persona en comentar este artículo.', submitError: 'No se pudo publicar. Inténtalo de nuevo.', pending: 'Comentario enviado. Se publicará después de revisión.', namePlaceholder: 'Ej. María Santos', emailPlaceholder: 'maria@email.com', website: 'Sitio web' }
+    : { loading: 'Loading article...', error: 'The article could not be loaded.', retry: 'Retry', commentsLoading: 'Loading comments...', commentsError: 'Comments could not be loaded.', emptyComments: 'Be the first person to comment on this article.', submitError: 'Could not publish. Please try again.', pending: 'Comment submitted. It will be published after review.', namePlaceholder: 'e.g. Maria Santos', emailPlaceholder: 'maria@email.com', website: 'Website' };
   usePageMetadata({
     title: post?.title ?? blogPage.eyebrow,
     description: post?.excerpt ?? blogPage.description,
@@ -103,6 +103,7 @@ export default function PostDetailPage() {
   const handleCommentChange = ({ target }) => {
     setCommentForm((current) => ({ ...current, [target.name]: target.value }));
     setCommentsError('');
+    setCommentNotice('');
   };
 
   const handleReplyChange = (commentId, { target }) => {
@@ -122,9 +123,9 @@ export default function PostDetailPage() {
     setCommentsError('');
 
     try {
-      const response = await api.createPostComment(slug, commentFormToPayload(commentForm, currentUser));
-      setComments((current) => addComment(current, response.data.comment));
+      await api.createPostComment(slug, commentFormToPayload(commentForm, currentUser));
       setCommentForm(emptyCommentForm);
+      setCommentNotice(copy.pending);
       setCommentsStatus('success');
     } catch (requestError) {
       setCommentsError(requestError.message || copy.submitError);
@@ -203,6 +204,7 @@ export default function PostDetailPage() {
         </form>
 
         {commentsStatus === 'loading' && <p className="content-feedback">{copy.commentsLoading}</p>}
+        {commentNotice && <p className="form-success" role="status">{commentNotice}</p>}
         {commentsError && <p className="form-error" role="alert">{commentsError}</p>}
         {commentsStatus === 'success' && comments.length === 0 && <p className="content-feedback">{copy.emptyComments}</p>}
 

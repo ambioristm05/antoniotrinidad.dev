@@ -43,6 +43,12 @@ docker start antoniotrinidad-mongo
 | `ADMIN_NAME` | No | Nombre usado por `npm run create:admin`. |
 | `ADMIN_EMAIL` | No | Email usado por `npm run create:admin`. |
 | `ADMIN_PASSWORD` | No | Password usado por `npm run create:admin`. |
+| `CLOUDINARY_CLOUD_NAME` | No | Cloud name de Cloudinary para subir imagenes desde el admin. |
+| `CLOUDINARY_API_KEY` | No | API key de Cloudinary. Debe configurarse junto con `CLOUDINARY_CLOUD_NAME` y `CLOUDINARY_API_SECRET`. |
+| `CLOUDINARY_API_SECRET` | No | API secret de Cloudinary para firmar subidas desde el backend. |
+| `CLOUDINARY_FOLDER` | No | Carpeta base para imagenes subidas. Por defecto `antoniotrinidad-dev`. |
+
+Si Cloudinary no esta configurado, el admin puede seguir pegando URLs existentes o rutas publicas. Para activar la subida directa, configura las tres credenciales de Cloudinary en el entorno del backend.
 
 ## Scripts
 
@@ -98,6 +104,7 @@ La imagen usa un usuario sin privilegios e incluye health check en `/api/health`
 | Posts | `GET /api/posts`, `GET /api/posts/featured`, `GET /api/posts/:slug`, `GET /api/posts/admin/all`, `POST /api/posts`, `PATCH /api/posts/:id`, `DELETE /api/posts/:id` |
 | Categories | `GET /api/categories`, `POST /api/categories`, `PATCH /api/categories/:id`, `DELETE /api/categories/:id` |
 | Contact | `POST /api/contact`, `GET /api/contact/messages`, `PATCH /api/contact/messages/:id`, `DELETE /api/contact/messages/:id` |
+| Uploads | `POST /api/uploads/images` |
 
 ## Autenticacion
 

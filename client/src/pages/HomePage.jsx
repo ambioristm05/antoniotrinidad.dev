@@ -59,6 +59,9 @@ export default function HomePage() {
             <Link className="button button--secondary" to="/contact">
               {home.secondaryAction}
             </Link>
+            <a className="button button--secondary" href={profile.resumeUrl} download>
+              {home.resumeAction}
+            </a>
           </div>
           <dl className="metric-row">
             {profile.metrics.map((metric) => (

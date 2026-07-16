@@ -3,7 +3,10 @@ import { Router } from 'express';
 import {
   createPostComment,
   createPostCommentReply,
+  deleteComment,
+  getAdminComments,
   getPostComments,
+  updateComment,
 } from '../controllers/comment.controller.js';
 import {
   createPost,
@@ -19,6 +22,8 @@ import { commentLimiter } from '../middlewares/rateLimit.js';
 import {
   validateCommentCreate,
   validateCommentQuery,
+  validateAdminCommentQuery,
+  validateCommentUpdate,
   validateReplyCreate,
 } from '../validators/comment.validators.js';
 import {
@@ -33,6 +38,9 @@ const router = Router();
 router.get('/', validatePublicPostQuery, getPosts);
 router.get('/featured', getFeaturedPosts);
 router.get('/admin/all', protect, restrictTo('admin'), validateAdminPostQuery, getAdminPosts);
+router.get('/admin/comments', protect, restrictTo('admin'), validateAdminCommentQuery, getAdminComments);
+router.patch('/admin/comments/:commentId', protect, restrictTo('admin'), validateCommentUpdate, updateComment);
+router.delete('/admin/comments/:commentId', protect, restrictTo('admin'), deleteComment);
 router.get('/:slug/comments', validateCommentQuery, getPostComments);
 router.post('/:slug/comments', commentLimiter, validateCommentCreate, createPostComment);
 router.post('/:slug/comments/:commentId/replies', commentLimiter, validateReplyCreate, createPostCommentReply);

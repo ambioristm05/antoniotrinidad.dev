@@ -15,8 +15,9 @@ export const errorHandler = (error, req, res, _next) => {
   let message = error.message || 'Internal server error';
 
   if (error.type === 'entity.too.large') {
+    const sizeMb = error.limit ? Math.round(error.limit / (1024 * 1024)) : 1;
     statusCode = 413;
-    message = 'Request body cannot exceed 1mb';
+    message = `Request body cannot exceed ${sizeMb}mb`;
   }
 
   if (error instanceof SyntaxError && error.status === 400 && 'body' in error) {

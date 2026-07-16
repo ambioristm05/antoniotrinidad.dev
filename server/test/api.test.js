@@ -13,6 +13,10 @@ process.env.CLIENT_URL ??= 'http://localhost:5173';
 process.env.ADMIN_NAME ??= '';
 process.env.ADMIN_EMAIL ??= '';
 process.env.ADMIN_PASSWORD ??= '';
+process.env.CLOUDINARY_CLOUD_NAME = '';
+process.env.CLOUDINARY_API_KEY = '';
+process.env.CLOUDINARY_API_SECRET = '';
+process.env.CLOUDINARY_FOLDER = '';
 
 const { default: app } = await import('../src/app.js');
 const { Category } = await import('../src/models/Category.js');
@@ -482,6 +486,74 @@ describe('Backend API', { concurrency: false }, () => {
     assert.equal(unknownEmail.body.message, 'Invalid email or password');
   });
 
+  it('requests and confirms admin password recovery without exposing account existence', async () => {
+    await User.create({
+      name: 'Antonio Admin',
+      email: 'admin@example.com',
+      passwordHash: 'password123',
+    });
+
+    const knownEmail = await request('/api/auth/forgot-password', {
+      method: 'POST',
+      body: {
+        email: 'ADMIN@EXAMPLE.COM',
+      },
+    });
+    const unknownEmail = await request('/api/auth/forgot-password', {
+      method: 'POST',
+      body: {
+        email: 'unknown@example.com',
+      },
+    });
+
+    assert.equal(knownEmail.response.status, 200);
+    assert.equal(unknownEmail.response.status, 200);
+    assert.equal(knownEmail.body.message, unknownEmail.body.message);
+    assert.ok(knownEmail.body.data.resetUrl.startsWith(`${process.env.CLIENT_URL}/admin/reset-password?token=`));
+    assert.equal(unknownEmail.body.data, undefined);
+
+    const resetToken = new URL(knownEmail.body.data.resetUrl).searchParams.get('token');
+    const storedAdmin = await User.findOne({ email: 'admin@example.com' }).select(
+      '+passwordHash +passwordResetToken +passwordResetExpires',
+    );
+
+    assert.ok(resetToken);
+    assert.notEqual(storedAdmin.passwordResetToken, resetToken);
+    assert.ok(storedAdmin.passwordResetExpires > new Date());
+
+    const reset = await request('/api/auth/reset-password', {
+      method: 'POST',
+      body: {
+        token: resetToken,
+        password: 'new-password-456',
+      },
+    });
+
+    assert.equal(reset.response.status, 200);
+    assert.equal(reset.body.status, 'success');
+    assert.ok(reset.body.token);
+
+    const updatedAdmin = await User.findOne({ email: 'admin@example.com' }).select(
+      '+passwordHash +passwordResetToken +passwordResetExpires',
+    );
+
+    assert.equal(await updatedAdmin.comparePassword('password123'), false);
+    assert.equal(await updatedAdmin.comparePassword('new-password-456'), true);
+    assert.equal(updatedAdmin.passwordResetToken, undefined);
+    assert.equal(updatedAdmin.passwordResetExpires, undefined);
+
+    const reused = await request('/api/auth/reset-password', {
+      method: 'POST',
+      body: {
+        token: resetToken,
+        password: 'another-password-789',
+      },
+    });
+
+    assert.equal(reused.response.status, 400);
+    assert.equal(reused.body.message, 'Password reset token is invalid or has expired');
+  });
+
   it('rejects malformed tokens and tokens for deleted users', async () => {
     const malformed = await request('/api/auth/me', {
       headers: {
@@ -530,6 +602,46 @@ describe('Backend API', { concurrency: false }, () => {
 
     assert.equal(response.response.status, 403);
     assert.equal(response.body.message, 'You do not have permission to perform this action');
+  });
+
+  it('protects image uploads and reports missing Cloudinary configuration', async () => {
+    const { authorization } = await seedAuthorizedAdmin();
+    const unauthenticated = await request('/api/uploads/images', {
+      method: 'POST',
+      body: {
+        dataUrl: 'data:image/png;base64,aGVsbG8=',
+        folder: 'projects',
+      },
+    });
+    const invalid = await request('/api/uploads/images', {
+      method: 'POST',
+      headers: {
+        Authorization: authorization,
+      },
+      body: {
+        dataUrl: 'not-an-image',
+        folder: 'projects',
+      },
+    });
+    const disabled = await request('/api/uploads/images', {
+      method: 'POST',
+      headers: {
+        Authorization: authorization,
+      },
+      body: {
+        dataUrl: 'data:image/png;base64,aGVsbG8=',
+        folder: 'projects',
+      },
+    });
+
+    assert.equal(unauthenticated.response.status, 401);
+    assert.equal(invalid.response.status, 400);
+    assert.equal(invalid.body.message, 'Image must be a base64 encoded PNG, JPG, WEBP or GIF data URL');
+    assert.equal(disabled.response.status, 503);
+    assert.equal(
+      disabled.body.message,
+      'Image uploads are not configured. Add Cloudinary credentials or paste an existing image URL.',
+    );
   });
 
   it('creates the initial admin only once', async () => {
@@ -1158,8 +1270,8 @@ describe('Backend API', { concurrency: false }, () => {
     assert.ok(featured.body.data.posts.every((post) => new Date(post.publishedAt) <= new Date()));
   });
 
-  it('lists, creates and replies to public post comments without exposing emails', async () => {
-    const { user } = await seedAuthorizedAdmin();
+  it('moderates public post comments without exposing emails', async () => {
+    const { user, authorization } = await seedAuthorizedAdmin();
     const post = await Post.create({
       title: 'Commented Post',
       excerpt: 'A public post that accepts comments.',
@@ -1202,11 +1314,41 @@ describe('Backend API', { concurrency: false }, () => {
     assert.equal(created.body.data.comment.authorName, 'Ada Lovelace');
     assert.equal(created.body.data.comment.authorAvatar, 'https://example.com/ada.png');
     assert.equal(created.body.data.comment.authorEmail, undefined);
+    assert.equal(created.body.data.comment.status, 'hidden');
     assert.equal(await PostComment.countDocuments({ post: post._id }), 1);
 
     const stored = await PostComment.findById(created.body.data.comment._id).select('+authorEmail');
 
     assert.equal(stored.authorEmail, 'ada@example.com');
+
+    const pending = await request('/api/posts/admin/comments?status=hidden&search=ada', {
+      headers: {
+        Authorization: authorization,
+      },
+    });
+
+    assert.equal(pending.response.status, 200);
+    assert.equal(pending.body.results, 1);
+    assert.equal(pending.body.data.comments[0].authorEmail, 'ada@example.com');
+    assert.equal(pending.body.data.comments[0].post.title, 'Commented Post');
+
+    const hiddenFromPublic = await request(`/api/posts/${post.slug}/comments?limit=5&sort=-createdAt`);
+
+    assert.equal(hiddenFromPublic.response.status, 200);
+    assert.equal(hiddenFromPublic.body.results, 0);
+
+    const approved = await request(`/api/posts/admin/comments/${created.body.data.comment._id}`, {
+      method: 'PATCH',
+      headers: {
+        Authorization: authorization,
+      },
+      body: {
+        status: 'visible',
+      },
+    });
+
+    assert.equal(approved.response.status, 200);
+    assert.equal(approved.body.data.comment.status, 'visible');
 
     const reply = await request(`/api/posts/${post.slug}/comments/${created.body.data.comment._id}/replies`, {
       method: 'POST',
@@ -1232,6 +1374,16 @@ describe('Backend API', { concurrency: false }, () => {
     assert.equal(listed.body.data.comments[0].replies[0].message, 'Gracias por leerlo.');
     assert.equal(listed.body.data.comments[0].replies[0].authorEmail, undefined);
 
+    const removed = await request(`/api/posts/admin/comments/${created.body.data.comment._id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: authorization,
+      },
+    });
+
+    assert.equal(removed.response.status, 204);
+    assert.equal(await PostComment.countDocuments({ post: post._id }), 0);
+
     const hidden = await request('/api/posts/private-post/comments', {
       method: 'POST',
       body: {
@@ -1254,7 +1406,7 @@ describe('Backend API', { concurrency: false }, () => {
     });
 
     assert.equal(honeypot.response.status, 201);
-    assert.equal(await PostComment.countDocuments({ post: post._id }), 1);
+    assert.equal(await PostComment.countDocuments({ post: post._id }), 0);
   });
 
   it('updates publication state and deletes posts with consistent errors', async () => {

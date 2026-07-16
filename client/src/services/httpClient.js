@@ -62,7 +62,7 @@ export const createHttpClient = ({
 
   const request = async (
     path,
-    { method = 'GET', query, body, headers: customHeaders, signal, ...fetchOptions } = {},
+    { method = 'GET', query, body, headers: customHeaders, signal, timeoutMs: requestTimeoutMs = timeoutMs, ...fetchOptions } = {},
   ) => {
     const headers = new Headers(customHeaders);
     const token = getAccessToken();
@@ -83,7 +83,7 @@ export const createHttpClient = ({
     const timeout = setTimeout(() => {
       timedOut = true;
       controller.abort();
-    }, timeoutMs);
+    }, requestTimeoutMs);
 
     try {
       const url = appendQuery(`${baseUrl}${path}`, query);

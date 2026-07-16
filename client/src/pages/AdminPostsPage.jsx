@@ -2,6 +2,7 @@ import { ArrowLeft, Pencil, Plus, Trash2 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
+import ImageUploadField from '../components/ImageUploadField.jsx';
 import { usePreferences } from '../contexts/PreferencesContext.jsx';
 import { api } from '../services/api.js';
 import { emptyPostForm, postFormToPayload, postToForm } from '../services/postForm.js';
@@ -21,7 +22,15 @@ const copyByLanguage = {
       category: 'Categoría', tags: 'Etiquetas', status: 'Estado', coverImage: 'Imagen de portada',
       featured: 'Artículo destacado', publishedAt: 'Fecha de publicación',
     },
-    hints: { tags: 'Separadas por comas', content: 'Puedes usar encabezados, listas, enlaces y bloques de código Markdown.' },
+    hints: { tags: 'Separadas por comas', content: 'Puedes usar encabezados, listas, enlaces y bloques de código Markdown.', coverImage: 'Pega una URL o sube una imagen a Cloudinary.' },
+    imageUpload: {
+      upload: 'Subir imagen',
+      uploading: 'Subiendo...',
+      uploadError: 'No se pudo subir la imagen.',
+      noFile: 'Selecciona una imagen.',
+      invalidType: 'Usa PNG, JPG, WEBP o GIF.',
+      tooLarge: 'La imagen no puede superar 5 MB.',
+    },
     placeholders: {
       title: 'Ej. Cómo construir una API segura', slug: 'como-construir-una-api-segura',
       excerpt: 'Ej. Principios prácticos para proteger una API Express.',
@@ -43,7 +52,15 @@ const copyByLanguage = {
       category: 'Category', tags: 'Tags', status: 'Status', coverImage: 'Cover image',
       featured: 'Featured article', publishedAt: 'Publication date',
     },
-    hints: { tags: 'Comma separated', content: 'You can use Markdown headings, lists, links and code blocks.' },
+    hints: { tags: 'Comma separated', content: 'You can use Markdown headings, lists, links and code blocks.', coverImage: 'Paste a URL or upload an image to Cloudinary.' },
+    imageUpload: {
+      upload: 'Upload image',
+      uploading: 'Uploading...',
+      uploadError: 'The image could not be uploaded.',
+      noFile: 'Select an image.',
+      invalidType: 'Use PNG, JPG, WEBP or GIF.',
+      tooLarge: 'Images cannot exceed 5 MB.',
+    },
     placeholders: {
       title: 'E.g. How to build a secure API', slug: 'how-to-build-a-secure-api',
       excerpt: 'E.g. Practical principles for securing an Express API.',
@@ -224,7 +241,7 @@ function PostEditor({ labels, mode }) {
             </Field>
             <Field label={labels.fields.publishedAt}><input disabled={form.status === 'draft'} name="publishedAt" onChange={handleChange} type="datetime-local" value={form.publishedAt} /></Field>
           </div>
-          <Field label={labels.fields.coverImage}><input name="coverImage" onChange={handleChange} placeholder={labels.placeholders.coverImage} type="url" value={form.coverImage} /></Field>
+          <ImageUploadField folder="posts" hint={labels.hints.coverImage} label={labels.fields.coverImage} labels={labels.imageUpload} name="coverImage" onChange={handleChange} placeholder={labels.placeholders.coverImage} value={form.coverImage} />
           <label className="checkbox-field"><input checked={form.featured} name="featured" onChange={handleChange} type="checkbox" />{labels.fields.featured}</label>
           <div className="form-actions">
             <button className="button button--primary" disabled={status === 'saving'} type="submit">{status === 'saving' ? labels.saving : labels.save}</button>

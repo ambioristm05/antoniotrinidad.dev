@@ -75,7 +75,7 @@ const postCommentSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: ['visible', 'hidden'],
-      default: 'visible',
+      default: 'hidden',
     },
     replies: [replySchema],
   },
