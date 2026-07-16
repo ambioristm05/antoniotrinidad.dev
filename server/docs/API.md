@@ -589,7 +589,7 @@ Respuesta `204` sin body.
 
 ### POST /api/contact
 
-Guarda un mensaje de contacto publico.
+Guarda un mensaje de contacto publico y, si Resend esta configurado, envia una notificacion al email del admin.
 
 Body:
 
@@ -612,6 +612,12 @@ Respuesta `201`:
 ```
 
 La respuesta publica no devuelve el mensaje ni datos personales. Enviar el mismo email, asunto y mensaje dentro de 15 minutos devuelve el mismo `201` sin crear un duplicado.
+
+Configuracion de correo:
+
+- `RESEND_API_KEY` y `EMAIL_FROM` habilitan el envio.
+- `CONTACT_NOTIFICATION_EMAIL` define el destinatario de los mensajes.
+- Si `CONTACT_NOTIFICATION_EMAIL` no existe, se usa `ADMIN_EMAIL` como fallback.
 
 Proteccion anti-spam:
 

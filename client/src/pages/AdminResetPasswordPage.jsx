@@ -3,6 +3,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import { Link, useSearchParams } from 'react-router-dom';
 
 import BrandLogo from '../components/BrandLogo.jsx';
+import FormNotice from '../components/FormNotice.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
 import { usePageMetadata } from '../hooks/usePageMetadata.js';
 import { api } from '../services/api.js';
@@ -168,8 +169,8 @@ export default function AdminResetPasswordPage() {
                 value={passwordConfirmation}
               />
             </label>
-            {notice ? <p className="form-success" role="status">{notice}</p> : null}
-            {error ? <p className="form-error" role="alert">{error}</p> : null}
+            {notice ? <FormNotice>{notice}</FormNotice> : null}
+            {error ? <FormNotice type="error">{error}</FormNotice> : null}
             <button className="button button--primary" disabled={submitting || Boolean(notice)} type="submit">
               {submitting ? labels.submitting : labels.resetSubmit}
             </button>
@@ -189,9 +190,9 @@ export default function AdminResetPasswordPage() {
                 value={email}
               />
             </label>
-            {notice ? <p className="form-success" role="status">{notice}</p> : null}
+            {notice ? <FormNotice>{notice}</FormNotice> : null}
             {localResetUrl ? <a className="auth-dev-link" href={localResetUrl}>{labels.localLink}</a> : null}
-            {error ? <p className="form-error" role="alert">{error}</p> : null}
+            {error ? <FormNotice type="error">{error}</FormNotice> : null}
             <button className="button button--primary" disabled={submitting} type="submit">
               {submitting ? labels.submitting : labels.requestSubmit}
             </button>

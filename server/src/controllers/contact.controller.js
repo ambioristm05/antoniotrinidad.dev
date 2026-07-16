@@ -1,5 +1,7 @@
 import { ContactMessage } from '../models/ContactMessage.js';
+import { env } from '../config/env.js';
 import { saveContactMessage } from '../services/contact.service.js';
+import { sendContactNotificationEmail } from '../services/email.service.js';
 import { AppError } from '../utils/AppError.js';
 import { buildQueryOptions, buildTextRegex } from '../utils/apiFeatures.js';
 import { pick } from '../utils/pick.js';
@@ -18,7 +20,12 @@ export const createContactMessage = asyncHandler(async (req, res) => {
     return;
   }
 
-  await saveContactMessage(pick(req.body, ['name', 'email', 'subject', 'message']));
+  const { contactMessage, created } = await saveContactMessage(pick(req.body, ['name', 'email', 'subject', 'message']));
+
+  if (created && env.email.enabled && (env.email.contactTo || env.adminEmail)) {
+    await sendContactNotificationEmail(contactMessage);
+  }
+
   sendPublicSuccess(res);
 });
 

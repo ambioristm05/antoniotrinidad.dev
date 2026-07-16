@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import FormNotice from './FormNotice.jsx';
 import { usePreferences } from '../contexts/PreferencesContext.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
 import { api } from '../services/api.js';
@@ -83,8 +84,8 @@ export default function ContactForm() {
         <button className="button button--primary" disabled={status === 'sending'} type="submit">
           {status === 'sending' ? labels.sending : labels.send}
         </button>
-        {status === 'sent' && <p className="form-success" role="status">{copy.sent}</p>}
-        {status === 'error' && <p className="form-error" role="alert">{error}</p>}
+        {status === 'sent' && <FormNotice>{copy.sent}</FormNotice>}
+        {status === 'error' && <FormNotice type="error">{error}</FormNotice>}
       </div>
     </form>
   );

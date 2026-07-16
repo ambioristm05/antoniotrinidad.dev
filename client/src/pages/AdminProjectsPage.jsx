@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import ImageUploadField from '../components/ImageUploadField.jsx';
+import StatusBadge from '../components/StatusBadge.jsx';
 import { usePreferences } from '../contexts/PreferencesContext.jsx';
 import { api } from '../services/api.js';
 import {
@@ -162,7 +163,7 @@ function ProjectList({ labels }) {
                 <tr key={project._id}>
                   <td><strong>{project.title}</strong></td>
                   <td>{project.category}</td>
-                  <td>{labels.statuses[project.status] ?? project.status}</td>
+                  <td><StatusBadge status={project.status}>{labels.statuses[project.status] ?? project.status}</StatusBadge></td>
                   <td>{project.featured ? labels.yes : labels.no}</td>
                   <td>
                     <div className="table-actions">

@@ -79,6 +79,7 @@ const parseEmailConfig = () => {
   return {
     resendApiKey,
     from,
+    contactTo: getOptionalEnv('CONTACT_NOTIFICATION_EMAIL'),
     enabled: values.every(Boolean),
   };
 };

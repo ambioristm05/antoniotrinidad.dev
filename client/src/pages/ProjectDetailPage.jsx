@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 
 import ContentFeedback from '../components/ContentFeedback.jsx';
+import StatusBadge from '../components/StatusBadge.jsx';
 import { useApiResource } from '../hooks/useApiResource.js';
 import { useSiteContent } from '../hooks/useSiteContent.js';
 import { usePageMetadata } from '../hooks/usePageMetadata.js';
@@ -47,7 +48,7 @@ export default function ProjectDetailPage() {
           <p>{project.summary}</p>
         </div>
         <div className="detail-panel">
-          <span className="status">{project.status}</span>
+          <StatusBadge status={project.status}>{project.status}</StatusBadge>
           <div className="tag-list">{(project.technologies ?? []).map((technology) => <span key={technology}>{technology}</span>)}</div>
         </div>
       </div>

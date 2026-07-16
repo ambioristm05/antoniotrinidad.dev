@@ -23,6 +23,7 @@ const validEnv = {
   CLOUDINARY_FOLDER: '',
   RESEND_API_KEY: '',
   EMAIL_FROM: '',
+  CONTACT_NOTIFICATION_EMAIL: '',
 };
 
 const loadEnv = (overrides = {}) =>

@@ -1,6 +1,7 @@
 import { RefreshCw } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
+import StatusBadge from '../components/StatusBadge.jsx';
 import { usePreferences } from '../contexts/PreferencesContext.jsx';
 import { useAdminDashboard } from '../hooks/useAdminDashboard.js';
 import { useSiteContent } from '../hooks/useSiteContent.js';
@@ -70,7 +71,7 @@ export default function AdminDashboardPage() {
             ) : data?.recentProjects.length ? (
               data.recentProjects.map((project) => (
                 <article key={project._id}>
-                  <span>{project.status}</span>
+                  <StatusBadge status={project.status}>{project.status}</StatusBadge>
                   <strong>{project.title}</strong>
                   <small>{project.category}</small>
                 </article>

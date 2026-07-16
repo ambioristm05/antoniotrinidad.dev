@@ -9,6 +9,7 @@ import {
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
+import StatusBadge from '../components/StatusBadge.jsx';
 import { usePreferences } from '../contexts/PreferencesContext.jsx';
 import { api } from '../services/api.js';
 import { buildEmailComposeUrl } from '../services/emailLinks.js';
@@ -167,7 +168,7 @@ export default function AdminMessagesPage() {
             <div className="message-list">
               {messages.map((message) => (
                 <button className={`message-item${selected?._id === message._id ? ' is-selected' : ''}${message.status === 'unread' ? ' is-unread' : ''}`} key={message._id} onClick={() => setSelected(message)} type="button">
-                  <span>{labels.statuses[message.status]}</span>
+                  <StatusBadge status={message.status}>{labels.statuses[message.status]}</StatusBadge>
                   <strong>{message.subject}</strong>
                   <small>{message.name} · {formatDateTime(message.createdAt, language)}</small>
                 </button>
@@ -188,7 +189,7 @@ export default function AdminMessagesPage() {
           {selected ? (
             <>
               <header>
-                <span>{labels.statuses[selected.status]}</span>
+                <StatusBadge status={selected.status}>{labels.statuses[selected.status]}</StatusBadge>
                 <h2>{selected.subject}</h2>
                 <dl>
                   <div><dt>{labels.from}</dt><dd>{selected.name} · <a href={buildEmailComposeUrl({ email: selected.email })} rel="noreferrer" target="_blank">{selected.email}</a></dd></div>

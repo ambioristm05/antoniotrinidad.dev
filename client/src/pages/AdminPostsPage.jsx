@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 
 import ImageUploadField from '../components/ImageUploadField.jsx';
+import StatusBadge from '../components/StatusBadge.jsx';
 import { usePreferences } from '../contexts/PreferencesContext.jsx';
 import { api } from '../services/api.js';
 import { emptyPostForm, postFormToPayload, postToForm } from '../services/postForm.js';
@@ -133,7 +134,7 @@ function PostList({ labels, language }) {
                 <tr key={post._id}>
                   <td><strong>{post.title}</strong></td>
                   <td>{post.category}</td>
-                  <td>{labels.statuses[post.status] ?? post.status}</td>
+                  <td><StatusBadge status={post.status}>{labels.statuses[post.status] ?? post.status}</StatusBadge></td>
                   <td>{post.readingTime} {labels.minutes}</td>
                   <td>{post.publishedAt ? formatDate(post.publishedAt, language === 'es' ? 'es-DO' : 'en-US') : '-'}</td>
                   <td>

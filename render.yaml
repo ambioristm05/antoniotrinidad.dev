@@ -32,3 +32,5 @@ services:
         sync: false
       - key: EMAIL_FROM
         sync: false
+      - key: CONTACT_NOTIFICATION_EMAIL
+        sync: false

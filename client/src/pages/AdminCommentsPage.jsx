@@ -9,6 +9,7 @@ import {
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 
+import StatusBadge from '../components/StatusBadge.jsx';
 import { usePreferences } from '../contexts/PreferencesContext.jsx';
 import { api } from '../services/api.js';
 import { buildEmailComposeUrl } from '../services/emailLinks.js';
@@ -192,7 +193,7 @@ export default function AdminCommentsPage() {
             <div className="message-list">
               {comments.map((comment) => (
                 <button className={`message-item${selected?._id === comment._id ? ' is-selected' : ''}${comment.status === 'hidden' ? ' is-unread' : ''}`} key={comment._id} onClick={() => setSelected(comment)} type="button">
-                  <span>{labels.statuses[comment.status]}</span>
+                  <StatusBadge status={comment.status}>{labels.statuses[comment.status]}</StatusBadge>
                   <strong>{comment.authorName}</strong>
                   <small>{comment.post?.title ?? '-'} · {formatDateTime(comment.createdAt, language === 'es' ? 'es-DO' : 'en-US')}</small>
                 </button>
@@ -213,7 +214,7 @@ export default function AdminCommentsPage() {
           {selected ? (
             <>
               <header>
-                <span>{labels.statuses[selected.status]}</span>
+                <StatusBadge status={selected.status}>{labels.statuses[selected.status]}</StatusBadge>
                 <h2>{selected.authorName}</h2>
                 <dl>
                   <div><dt>{labels.author}</dt><dd>{selected.authorName}{selected.authorEmail ? <> · <a href={buildEmailComposeUrl({ email: selected.authorEmail })} rel="noreferrer" target="_blank">{selected.authorEmail}</a></> : null}</dd></div>
