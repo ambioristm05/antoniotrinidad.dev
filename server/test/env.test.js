@@ -21,6 +21,8 @@ const validEnv = {
   CLOUDINARY_API_KEY: '',
   CLOUDINARY_API_SECRET: '',
   CLOUDINARY_FOLDER: '',
+  RESEND_API_KEY: '',
+  EMAIL_FROM: '',
 };
 
 const loadEnv = (overrides = {}) =>
@@ -86,6 +88,16 @@ describe('Environment configuration', () => {
     assert.match(result.stderr, /CLOUDINARY_CLOUD_NAME, CLOUDINARY_API_KEY and CLOUDINARY_API_SECRET must be configured together/);
   });
 
+  it('requires complete Resend credentials when password reset emails are configured', () => {
+    const result = loadEnv({
+      RESEND_API_KEY: 're_123',
+      EMAIL_FROM: '',
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /RESEND_API_KEY and EMAIL_FROM must be configured together/);
+  });
+
   it('requires stronger secrets and HTTPS in production', () => {
     const weakSecret = loadEnv({
       NODE_ENV: 'production',
@@ -104,5 +116,32 @@ describe('Environment configuration', () => {
     assert.match(weakSecret.stderr, /JWT_SECRET must contain at least 32 characters in production/);
     assert.equal(insecureClientUrl.status, 1);
     assert.match(insecureClientUrl.stderr, /CLIENT_URL must use HTTPS in production/);
+  });
+
+  it('requires password reset email settings in production', () => {
+    const result = loadEnv({
+      NODE_ENV: 'production',
+      PORT: '5000',
+      JWT_SECRET: 'a-secure-production-secret-with-32-chars',
+      CLIENT_URL: 'https://antoniotrinidad.dev',
+      RESEND_API_KEY: '',
+      EMAIL_FROM: '',
+    });
+
+    assert.equal(result.status, 1);
+    assert.match(result.stderr, /RESEND_API_KEY and EMAIL_FROM are required in production for password reset emails/);
+  });
+
+  it('accepts password reset email settings in production', () => {
+    const result = loadEnv({
+      NODE_ENV: 'production',
+      PORT: '5000',
+      JWT_SECRET: 'a-secure-production-secret-with-32-chars',
+      CLIENT_URL: 'https://antoniotrinidad.dev',
+      RESEND_API_KEY: 're_123',
+      EMAIL_FROM: 'Antonio Trinidad <no-reply@antoniotrinidad.dev>',
+    });
+
+    assert.equal(result.status, 0, result.stderr);
   });
 });

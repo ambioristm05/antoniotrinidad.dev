@@ -67,6 +67,22 @@ const parseCloudinaryConfig = () => {
   };
 };
 
+const parseEmailConfig = () => {
+  const resendApiKey = getOptionalEnv('RESEND_API_KEY');
+  const from = getOptionalEnv('EMAIL_FROM');
+  const values = [resendApiKey, from];
+
+  if (values.some(Boolean) && values.some((value) => !value)) {
+    throw new Error('RESEND_API_KEY and EMAIL_FROM must be configured together');
+  }
+
+  return {
+    resendApiKey,
+    from,
+    enabled: values.every(Boolean),
+  };
+};
+
 const parseTrustProxy = () => {
   const value = process.env.TRUST_PROXY?.trim();
 
@@ -86,6 +102,7 @@ const jwtSecret = getRequiredEnv('JWT_SECRET');
 const jwtExpiresIn = process.env.JWT_EXPIRES_IN?.trim() || '7d';
 const clientUrl = validateClientUrl(process.env.CLIENT_URL || 'http://localhost:5173');
 const cloudinary = parseCloudinaryConfig();
+const email = parseEmailConfig();
 
 if (!/^mongodb(?:\+srv)?:\/\//.test(mongodbUri)) {
   throw new Error('MONGODB_URI must start with mongodb:// or mongodb+srv://');
@@ -115,6 +132,10 @@ if (nodeEnv === 'production' && process.env.ADMIN_PASSWORD && process.env.ADMIN_
   throw new Error('ADMIN_PASSWORD must contain at least 12 characters in production');
 }
 
+if (nodeEnv === 'production' && !email.enabled) {
+  throw new Error('RESEND_API_KEY and EMAIL_FROM are required in production for password reset emails');
+}
+
 export const env = {
   port: parsePort(),
   nodeEnv,
@@ -127,6 +148,7 @@ export const env = {
   adminEmail: process.env.ADMIN_EMAIL,
   adminPassword: process.env.ADMIN_PASSWORD,
   cloudinary,
+  email,
   get isDevelopment() {
     return this.nodeEnv === 'development';
   },

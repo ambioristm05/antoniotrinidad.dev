@@ -1,4 +1,5 @@
 import { Post } from '../models/Post.js';
+import { cleanupUnusedCloudinaryImages } from '../services/imageUpload.service.js';
 import { AppError } from '../utils/AppError.js';
 import { buildQueryOptions, buildTextRegex } from '../utils/apiFeatures.js';
 import { pick } from '../utils/pick.js';
@@ -23,6 +24,8 @@ const getPublicPostFilter = () => ({
   status: 'published',
   publishedAt: { $lte: new Date() },
 });
+
+const getPostImageUrls = (post) => [post.coverImage].filter(Boolean);
 
 export const getPosts = asyncHandler(async (req, res) => {
   const { page, limit, skip, sort } = buildQueryOptions(req.query, {
@@ -155,8 +158,11 @@ export const updatePost = asyncHandler(async (req, res) => {
     throw new AppError('Post not found', 404);
   }
 
+  const previousImages = getPostImageUrls(post);
+
   Object.assign(post, pick(req.body, postFields));
   await post.save();
+  await cleanupUnusedCloudinaryImages(previousImages, getPostImageUrls(post));
 
   res.status(200).json({
     status: 'success',
@@ -172,6 +178,8 @@ export const deletePost = asyncHandler(async (req, res) => {
   if (!post) {
     throw new AppError('Post not found', 404);
   }
+
+  await cleanupUnusedCloudinaryImages(getPostImageUrls(post));
 
   res.status(204).send();
 });

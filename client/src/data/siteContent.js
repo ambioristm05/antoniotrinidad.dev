@@ -6,6 +6,7 @@ const sharedProfile = {
   email: 'hi@antoniotrinidad.dev',
   github: 'https://github.com/ambioristm05',
   linkedin: 'https://www.linkedin.com/in/antoniotrinidad/',
+  facebook: 'https://web.facebook.com/Antoniotrinidad.dev/',
   resumeUrl: '/Antonio-Trinidad-CV.pdf',
 };
 
@@ -26,7 +27,7 @@ const projectBase = [
   { id: '2', slug: 'blog-tecnico-cms', featured: true, technologies: ['React', 'Node.js', 'Markdown', 'MongoDB'], imageUrl: '/projects/cms-blog.svg' },
   { id: '3', slug: 'landing-captacion-medible', featured: true, technologies: ['Vite', 'React', 'CSS', 'Forms API'], imageUrl: '/projects/lead-landing.svg' },
   { id: '4', slug: 'api-automatizacion-contenido', featured: true, technologies: ['Node.js', 'Express', 'MongoDB', 'Webhooks'], imageUrl: '/projects/api-automation.svg' },
-].map((project) => ({ ...project, liveUrl: 'https://example.com', repoUrl: 'https://github.com/' }));
+].map((project) => ({ ...project, liveUrl: '', repoUrl: '' }));
 
 const projectsEs = [
   { title: 'Panel Operativo para Servicios', summary: 'Dashboard para seguimiento de clientes, tickets y métricas internas con filtros rápidos.', description: 'Una interfaz enfocada en la lectura rápida de información operativa para reducir el trabajo manual del equipo.', category: 'SaaS', status: 'En producción', results: ['35% menos tiempo de seguimiento', 'Flujos de soporte centralizados', 'Panel administrativo con roles'], challenge: 'Unificar datos dispersos sin saturar la pantalla principal.', solution: 'Diseñé una vista por prioridades con filtros persistentes y acciones visibles por contexto.', imageAlt: 'Vista previa de un panel operativo con métricas y tareas.' },

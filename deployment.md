@@ -8,6 +8,7 @@ La estrategia recomendada separa los servicios para mantener el proyecto simple,
 - Backend Node.js/Express en Render.
 - Base de datos MongoDB en MongoDB Atlas.
 - Imagenes en Cloudinary o almacenamiento externo equivalente.
+- Emails transaccionales en Resend para recuperacion de password.
 - Dominio personalizado apuntando al frontend.
 
 ## 1. Arquitectura de produccion
@@ -29,7 +30,8 @@ Render: server/
   v
 MongoDB Atlas
 
-Cloudinary almacena imagenes de proyectos y articulos.
+Render: server/ -> Cloudinary
+Render: server/ -> Resend -> email de recuperacion
 ```
 
 ## 2. Servicios elegidos
@@ -105,6 +107,21 @@ CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 ```
 
+### Emails
+
+Servicio recomendado: Resend.
+
+Uso previsto:
+
+- Enviar enlaces temporales de recuperacion de password del admin.
+
+Variables sugeridas:
+
+```env
+RESEND_API_KEY=
+EMAIL_FROM=Antonio Trinidad <no-reply@antoniotrinidad.dev>
+```
+
 ## 3. Variables de entorno
 
 ### Backend en Render
@@ -123,6 +140,8 @@ ADMIN_PASSWORD=
 CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
+RESEND_API_KEY=
+EMAIL_FROM=
 ```
 
 Notas:
@@ -132,6 +151,7 @@ Notas:
 - `CLIENT_URL` debe coincidir exactamente con el dominio publico del frontend para que CORS funcione correctamente.
 - `TRUST_PROXY=1` permite obtener la IP real detras del proxy de Render para aplicar rate limiting correctamente.
 - `ADMIN_PASSWORD` solo debe usarse para crear el primer administrador; despues conviene rotarla o eliminarla si el script ya no se necesita.
+- `RESEND_API_KEY` y `EMAIL_FROM` son obligatorias en produccion para que el flujo "recuperar password" envie el enlace por correo.
 
 ### Frontend en Vercel
 
@@ -198,8 +218,8 @@ Start Command: npm start
 Health Check Path: /api/health
 ```
 
-4. Completar `MONGODB_URI` y `JWT_SECRET` cuando Render los solicite. No guardar
-   estos valores en `render.yaml` ni en Git.
+4. Completar `MONGODB_URI`, `JWT_SECRET`, `RESEND_API_KEY` y `EMAIL_FROM` cuando
+   Render los solicite. No guardar estos valores en `render.yaml` ni en Git.
 5. Desplegar el servicio.
 6. Revisar logs para confirmar:
 
@@ -324,6 +344,7 @@ Checklist minimo:
 
 - `NODE_ENV=production`.
 - `JWT_SECRET` fuerte y privado.
+- `RESEND_API_KEY` privada y remitente `EMAIL_FROM` verificado.
 - CORS limitado a `CLIENT_URL`.
 - Rate limiting activo en login y contacto.
 - Helmet activo en Express.

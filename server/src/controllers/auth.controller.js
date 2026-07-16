@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 
 import { env } from '../config/env.js';
 import { User } from '../models/User.js';
+import { sendPasswordResetEmail } from '../services/email.service.js';
 import { AppError } from '../utils/AppError.js';
 import { sendToken } from '../utils/sendToken.js';
 import { asyncHandler } from '../middlewares/asyncHandler.js';
@@ -37,8 +38,21 @@ export const requestPasswordReset = asyncHandler(async (req, res) => {
     user.passwordResetExpires = new Date(Date.now() + resetTokenExpiresInMinutes * 60 * 1000);
     await user.save({ validateBeforeSave: false });
 
-    if (!env.isProduction) {
-      resetUrl = `${env.clientUrl}/admin/reset-password?token=${resetToken}`;
+    resetUrl = `${env.clientUrl}/admin/reset-password?token=${resetToken}`;
+
+    if (env.isProduction) {
+      try {
+        await sendPasswordResetEmail({
+          to: user.email,
+          resetUrl,
+          expiresInMinutes: resetTokenExpiresInMinutes,
+        });
+      } catch (error) {
+        user.passwordResetToken = undefined;
+        user.passwordResetExpires = undefined;
+        await user.save({ validateBeforeSave: false });
+        throw error;
+      }
     }
   }
 
@@ -46,7 +60,7 @@ export const requestPasswordReset = asyncHandler(async (req, res) => {
   res.status(200).json({
     status: 'success',
     message: resetRequestMessage,
-    ...(resetUrl && { data: { resetUrl, expiresInMinutes: resetTokenExpiresInMinutes } }),
+    ...(!env.isProduction && resetUrl && { data: { resetUrl, expiresInMinutes: resetTokenExpiresInMinutes } }),
   });
 });
 

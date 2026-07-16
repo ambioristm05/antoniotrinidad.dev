@@ -27,7 +27,16 @@ describe('public content helpers', () => {
     const content = getSiteContent('es');
 
     assert.equal(content.profile.github, 'https://github.com/ambioristm05');
+    assert.equal(content.profile.linkedin, 'https://www.linkedin.com/in/antoniotrinidad/');
+    assert.equal(content.profile.facebook, 'https://web.facebook.com/Antoniotrinidad.dev/');
     assert.equal(content.blogPage.comments.samples.length, 12);
     assert.ok(content.blogPage.comments.samples[0].avatarUrl);
+  });
+
+  it('does not publish placeholder project links', () => {
+    const { projects } = getSiteContent('es');
+
+    assert.equal(projects.some((project) => project.liveUrl === 'https://example.com'), false);
+    assert.equal(projects.some((project) => project.repoUrl === 'https://github.com/'), false);
   });
 });

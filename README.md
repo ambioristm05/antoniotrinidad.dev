@@ -12,6 +12,7 @@ mas una API Express/MongoDB para contenido, autenticacion y administracion.
   moderacion de comentarios.
 - Recuperacion de password admin mediante token temporal.
 - Subida de imagenes firmada desde el backend hacia Cloudinary.
+- Comentarios publicos en posts con moderacion desde el admin.
 - CV descargable desde home, about y footer.
 - SEO tecnico: metadata, Open Graph, sitemap dinamico y rutas canonicas.
 - Checks de accesibilidad, utilidades de formularios, HTTP client y build.
@@ -20,7 +21,7 @@ mas una API Express/MongoDB para contenido, autenticacion y administracion.
 
 - Frontend: React 19, Vite 6, React Router, CSS, lucide-react.
 - Backend: Node.js 20, Express, MongoDB, Mongoose, JWT, Helmet, CORS.
-- Servicios: MongoDB Atlas, Cloudinary, Vercel y Render.
+- Servicios: MongoDB Atlas, Cloudinary, Resend, Vercel y Render.
 
 ## Estructura
 
@@ -41,6 +42,7 @@ mas una API Express/MongoDB para contenido, autenticacion y administracion.
 - pnpm o corepack para `client/`.
 - MongoDB local o MongoDB Atlas.
 - Cuenta de Cloudinary si quieres subir imagenes desde el admin.
+- Cuenta de Resend para enviar correos de recuperacion en produccion.
 
 ## Configuracion local
 
@@ -81,6 +83,8 @@ CLOUDINARY_CLOUD_NAME=
 CLOUDINARY_API_KEY=
 CLOUDINARY_API_SECRET=
 CLOUDINARY_FOLDER=antoniotrinidad-dev
+RESEND_API_KEY=
+EMAIL_FROM=
 ```
 
 4. Configura `client/.env`.
@@ -146,6 +150,23 @@ CLOUDINARY_FOLDER=antoniotrinidad-dev
 El `API_SECRET` nunca debe estar en el frontend. El backend firma la subida y
 Cloudinary devuelve una URL segura que se guarda en el formulario.
 
+Cuando un proyecto o post reemplaza/elimina una imagen subida por este backend,
+la API intenta borrar la version anterior en Cloudinary para evitar archivos
+huerfanos. Las URLs externas pegadas manualmente no se eliminan.
+
+## Recuperacion de password
+
+En desarrollo, el endpoint de recuperacion devuelve un `resetUrl` para probar el
+flujo sin correo. En produccion, el backend envia ese enlace por Resend y exige:
+
+```env
+RESEND_API_KEY=your_resend_api_key
+EMAIL_FROM=Antonio Trinidad <no-reply@antoniotrinidad.dev>
+```
+
+El remitente debe estar verificado en Resend. No coloques `RESEND_API_KEY` en el
+frontend.
+
 ## Scripts utiles
 
 Frontend:
@@ -188,6 +209,7 @@ La estrategia recomendada esta en [deployment.md](deployment.md):
 - Backend en Render desde `server/`.
 - Base de datos en MongoDB Atlas.
 - Imagenes en Cloudinary.
+- Emails transaccionales en Resend.
 
 ## Documentacion
 

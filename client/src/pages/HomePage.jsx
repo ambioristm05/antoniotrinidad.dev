@@ -5,6 +5,7 @@ import ProjectCard from '../components/ProjectCard.jsx';
 import SectionHeader from '../components/SectionHeader.jsx';
 import StackIcon from '../components/StackIcon.jsx';
 import ContentFeedback from '../components/ContentFeedback.jsx';
+import { FacebookIcon, GitHubIcon, LinkedInIcon } from '../components/SocialIcons.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
 import { useApiResource } from '../hooks/useApiResource.js';
 import { usePageMetadata } from '../hooks/usePageMetadata.js';
@@ -42,6 +43,7 @@ export default function HomePage() {
       url: env.siteUrl,
       jobTitle: profile.role,
       email: profile.email,
+      sameAs: [profile.github, profile.linkedin, profile.facebook],
     },
   });
 
@@ -61,6 +63,18 @@ export default function HomePage() {
             </Link>
             <a className="button button--secondary" href={profile.resumeUrl} download>
               {home.resumeAction}
+            </a>
+            <a className="button button--secondary" href={profile.github} target="_blank" rel="noreferrer">
+              <GitHubIcon size={18} />
+              GitHub
+            </a>
+            <a className="button button--secondary" href={profile.linkedin} target="_blank" rel="noreferrer">
+              <LinkedInIcon size={18} />
+              LinkedIn
+            </a>
+            <a className="button button--secondary" href={profile.facebook} target="_blank" rel="noreferrer">
+              <FacebookIcon size={18} />
+              Facebook
             </a>
           </div>
           <dl className="metric-row">

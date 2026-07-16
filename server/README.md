@@ -47,8 +47,14 @@ docker start antoniotrinidad-mongo
 | `CLOUDINARY_API_KEY` | No | API key de Cloudinary. Debe configurarse junto con `CLOUDINARY_CLOUD_NAME` y `CLOUDINARY_API_SECRET`. |
 | `CLOUDINARY_API_SECRET` | No | API secret de Cloudinary para firmar subidas desde el backend. |
 | `CLOUDINARY_FOLDER` | No | Carpeta base para imagenes subidas. Por defecto `antoniotrinidad-dev`. |
+| `RESEND_API_KEY` | Si en produccion | API key de Resend para enviar emails de recuperacion de password. |
+| `EMAIL_FROM` | Si en produccion | Remitente verificado en Resend, por ejemplo `Antonio Trinidad <no-reply@antoniotrinidad.dev>`. |
 
 Si Cloudinary no esta configurado, el admin puede seguir pegando URLs existentes o rutas publicas. Para activar la subida directa, configura las tres credenciales de Cloudinary en el entorno del backend.
+
+Cuando una imagen subida por el backend deja de usarse en un proyecto o post, la API intenta borrarla de Cloudinary. Las URLs externas pegadas manualmente no se eliminan.
+
+En produccion, la recuperacion de password del admin requiere Resend configurado. En desarrollo y test, `POST /api/auth/forgot-password` devuelve `resetUrl` en la respuesta para probar el flujo sin enviar correos.
 
 ## Scripts
 
@@ -99,9 +105,10 @@ La imagen usa un usuario sin privilegios e incluye health check en `/api/health`
 | Area | Endpoints |
 | --- | --- |
 | Health | `GET /api/health` |
-| Auth | `POST /api/auth/login`, `POST /api/auth/logout`, `GET /api/auth/me` |
+| Auth | `POST /api/auth/login`, `POST /api/auth/forgot-password`, `POST /api/auth/reset-password`, `POST /api/auth/logout`, `GET /api/auth/me` |
 | Projects | `GET /api/projects`, `GET /api/projects/featured`, `GET /api/projects/:slug`, `POST /api/projects`, `PATCH /api/projects/:id`, `DELETE /api/projects/:id` |
 | Posts | `GET /api/posts`, `GET /api/posts/featured`, `GET /api/posts/:slug`, `GET /api/posts/admin/all`, `POST /api/posts`, `PATCH /api/posts/:id`, `DELETE /api/posts/:id` |
+| Post comments | `GET /api/posts/:slug/comments`, `POST /api/posts/:slug/comments`, `POST /api/posts/:slug/comments/:commentId/replies`, `GET /api/posts/admin/comments`, `PATCH /api/posts/admin/comments/:commentId`, `DELETE /api/posts/admin/comments/:commentId` |
 | Categories | `GET /api/categories`, `POST /api/categories`, `PATCH /api/categories/:id`, `DELETE /api/categories/:id` |
 | Contact | `POST /api/contact`, `GET /api/contact/messages`, `PATCH /api/contact/messages/:id`, `DELETE /api/contact/messages/:id` |
 | Uploads | `POST /api/uploads/images` |

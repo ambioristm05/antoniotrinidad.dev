@@ -1,4 +1,5 @@
 import { Project } from '../models/Project.js';
+import { cleanupUnusedCloudinaryImages } from '../services/imageUpload.service.js';
 import { AppError } from '../utils/AppError.js';
 import { buildQueryOptions, buildTextRegex } from '../utils/apiFeatures.js';
 import { pick } from '../utils/pick.js';
@@ -26,6 +27,8 @@ const projectFields = [
   'startDate',
   'endDate',
 ];
+
+const getProjectImageUrls = (project) => [project.coverImage, ...(project.gallery || [])].filter(Boolean);
 
 export const getProjects = asyncHandler(async (req, res) => {
   const { page, limit, skip, sort } = buildQueryOptions(req.query, {
@@ -114,8 +117,11 @@ export const updateProject = asyncHandler(async (req, res) => {
     throw new AppError('Project not found', 404);
   }
 
+  const previousImages = getProjectImageUrls(project);
+
   Object.assign(project, pick(req.body, projectFields));
   await project.save();
+  await cleanupUnusedCloudinaryImages(previousImages, getProjectImageUrls(project));
 
   res.status(200).json({
     status: 'success',
@@ -131,6 +137,8 @@ export const deleteProject = asyncHandler(async (req, res) => {
   if (!project) {
     throw new AppError('Project not found', 404);
   }
+
+  await cleanupUnusedCloudinaryImages(getProjectImageUrls(project));
 
   res.status(204).send();
 });

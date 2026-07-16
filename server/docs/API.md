@@ -59,6 +59,68 @@ Errores comunes:
 
 La respuesta incluye `Cache-Control: no-store` y nunca expone `passwordHash`.
 
+### POST /api/auth/forgot-password
+
+Genera un token temporal para restablecer el password del admin.
+
+Body:
+
+```json
+{
+  "email": "admin@example.com"
+}
+```
+
+Respuesta `200`:
+
+```json
+{
+  "status": "success",
+  "message": "If an admin account exists for that email, a password reset link has been prepared."
+}
+```
+
+En desarrollo y test, si el email existe, la respuesta incluye `data.resetUrl`
+para probar el flujo sin enviar correos. En produccion, el enlace se envia por
+Resend y nunca se devuelve en el JSON.
+
+### POST /api/auth/reset-password
+
+Confirma un token temporal y reemplaza el password del admin.
+
+Body:
+
+```json
+{
+  "token": "reset-token",
+  "password": "new-password"
+}
+```
+
+Respuesta `200`:
+
+```json
+{
+  "status": "success",
+  "token": "<jwt>",
+  "tokenType": "Bearer",
+  "expiresIn": "7d",
+  "data": {
+    "user": {
+      "_id": "...",
+      "name": "Admin",
+      "email": "admin@example.com",
+      "role": "admin"
+    }
+  }
+}
+```
+
+Errores comunes:
+
+- `400` si el token es invalido, expiro o el nuevo password no cumple la validacion.
+- `429` si se excede el limite de solicitudes de autenticacion.
+
 ### POST /api/auth/logout
 
 Cierra sesion del lado del cliente. No requiere token.
@@ -339,6 +401,143 @@ Requiere rol `admin`.
 
 Respuesta `204` sin body.
 
+## Post Comments
+
+Los comentarios publicos solo se aceptan en posts publicados y con fecha
+`publishedAt` vigente. Los comentarios nuevos se guardan con `status: "hidden"`
+hasta que un admin los modere.
+
+### GET /api/posts/:slug/comments
+
+Lista comentarios visibles de un post publicado.
+
+Query opcional:
+
+- `page`, `limit`, `sort`
+
+Los campos permitidos para `sort` son `createdAt` y `updatedAt`; `limit` se
+limita a 50.
+
+Respuesta `200`:
+
+```json
+{
+  "status": "success",
+  "results": 1,
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 1,
+    "pages": 1
+  },
+  "data": {
+    "comments": [
+      {
+        "_id": "...",
+        "authorName": "Ada",
+        "authorAvatar": "",
+        "message": "Great post.",
+        "status": "visible",
+        "replies": []
+      }
+    ]
+  }
+}
+```
+
+La respuesta publica no expone `authorEmail`.
+
+### POST /api/posts/:slug/comments
+
+Crea un comentario publico pendiente de moderacion.
+
+Body:
+
+```json
+{
+  "authorName": "Ada Lovelace",
+  "authorEmail": "ada@example.com",
+  "authorAvatar": "",
+  "message": "Great post.",
+  "website": ""
+}
+```
+
+`authorEmail`, `authorAvatar` y `website` son opcionales. `website` es un
+honeypot: si llega con valor, la API devuelve exito generico pero no guarda el
+comentario.
+
+Respuesta `201`:
+
+```json
+{
+  "status": "success",
+  "message": "Comment received successfully"
+}
+```
+
+### POST /api/posts/:slug/comments/:commentId/replies
+
+Crea una respuesta publica sobre un comentario visible.
+
+Body:
+
+```json
+{
+  "authorName": "Antonio",
+  "authorEmail": "antonio@example.com",
+  "authorAvatar": "",
+  "message": "Thanks for reading.",
+  "website": ""
+}
+```
+
+Respuesta `201`:
+
+```json
+{
+  "status": "success",
+  "message": "Reply received successfully"
+}
+```
+
+### GET /api/posts/admin/comments
+
+Lista comentarios para moderacion.
+
+Requiere rol `admin`.
+
+Query opcional:
+
+- `status`: `visible` o `hidden`
+- `search`: busca como texto literal en nombre, email y mensaje
+- `page`, `limit`, `sort`
+
+Los campos permitidos para `sort` son `createdAt`, `updatedAt`, `authorName` y
+`status`.
+
+### PATCH /api/posts/admin/comments/:commentId
+
+Actualiza el estado de un comentario.
+
+Requiere rol `admin`.
+
+Body:
+
+```json
+{
+  "status": "visible"
+}
+```
+
+### DELETE /api/posts/admin/comments/:commentId
+
+Elimina un comentario.
+
+Requiere rol `admin`.
+
+Respuesta `204` sin body.
+
 ## Categories
 
 ### GET /api/categories
@@ -461,11 +660,55 @@ Requiere rol `admin`.
 
 Respuesta `204` sin body.
 
+## Uploads
+
+### POST /api/uploads/images
+
+Sube una imagen a Cloudinary desde el panel admin.
+
+Requiere rol `admin`.
+
+Body:
+
+```json
+{
+  "dataUrl": "data:image/webp;base64,...",
+  "folder": "projects"
+}
+```
+
+`dataUrl` debe ser una imagen PNG, JPG, WEBP o GIF codificada como data URL
+base64. El body JSON se limita a 8 MB y `dataUrl` a 7 MB. `folder` es opcional
+y acepta `projects`, `posts` o `general`.
+
+Respuesta `201`:
+
+```json
+{
+  "status": "success",
+  "data": {
+    "image": {
+      "url": "https://res.cloudinary.com/.../image/upload/v123/...",
+      "publicId": "antoniotrinidad-dev/projects/...",
+      "width": 1920,
+      "height": 1080,
+      "format": "webp",
+      "bytes": 123456
+    }
+  }
+}
+```
+
+Si Cloudinary no esta configurado, devuelve `503`. Cuando una imagen subida por
+este backend deja de usarse en proyectos o posts, la API intenta borrarla de
+Cloudinary; URLs externas no se eliminan.
+
 ## Rate limits
 
 - API general: 300 requests cada 15 minutos.
 - Login: 10 intentos cada 15 minutos.
 - Contacto: 5 mensajes cada 1 hora.
+- Comentarios: 10 comentarios o respuestas cada 1 hora.
 
 ## Errores
 

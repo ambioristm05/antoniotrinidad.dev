@@ -1,4 +1,5 @@
 import SectionHeader from '../components/SectionHeader.jsx';
+import { FacebookIcon, GitHubIcon, LinkedInIcon } from '../components/SocialIcons.jsx';
 import { useSiteContent } from '../hooks/useSiteContent.js';
 import { usePageMetadata } from '../hooks/usePageMetadata.js';
 
@@ -19,9 +20,23 @@ export default function AboutPage() {
           {about.paragraphs.map((paragraph) => (
             <p key={paragraph}>{paragraph}</p>
           ))}
-          <a className="button button--primary resume-cta" href={profile.resumeUrl} download>
-            {about.resumeAction}
-          </a>
+          <div className="hero-actions resume-cta">
+            <a className="button button--primary" href={profile.resumeUrl} download>
+              {about.resumeAction}
+            </a>
+            <a className="button button--secondary" href={profile.github} target="_blank" rel="noreferrer">
+              <GitHubIcon size={18} />
+              GitHub
+            </a>
+            <a className="button button--secondary" href={profile.linkedin} target="_blank" rel="noreferrer">
+              <LinkedInIcon size={18} />
+              LinkedIn
+            </a>
+            <a className="button button--secondary" href={profile.facebook} target="_blank" rel="noreferrer">
+              <FacebookIcon size={18} />
+              Facebook
+            </a>
+          </div>
           <div className="skill-cloud">
             {skills.map((skill) => (
               <span key={skill.id}>{skill.label}</span>

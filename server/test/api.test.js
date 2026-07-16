@@ -17,6 +17,8 @@ process.env.CLOUDINARY_CLOUD_NAME = '';
 process.env.CLOUDINARY_API_KEY = '';
 process.env.CLOUDINARY_API_SECRET = '';
 process.env.CLOUDINARY_FOLDER = '';
+process.env.RESEND_API_KEY = '';
+process.env.EMAIL_FROM = '';
 
 const { default: app } = await import('../src/app.js');
 const { Category } = await import('../src/models/Category.js');
