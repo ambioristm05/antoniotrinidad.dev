@@ -1441,10 +1441,11 @@ input {
 
 .password-field {
   position: relative;
-  display: block;
+  display: grid;
 }
 
 .password-field input {
+  width: 100%;
   padding-right: 48px;
 }
 
@@ -1456,6 +1457,7 @@ input {
   width: 36px;
   height: 36px;
   place-items: center;
+  transform: translateY(-50%);
   border: 0;
   border-radius: var(--radius-sm);
   background: transparent;
