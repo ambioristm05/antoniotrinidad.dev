@@ -8,7 +8,7 @@ export default function AboutPage() {
   usePageMetadata({ title: about.eyebrow, description: about.description, path: '/about' });
 
   return (
-    <section className="page-section">
+    <section className="page-section about-page">
       <SectionHeader
         as="h1"
         eyebrow={about.eyebrow}

@@ -1069,6 +1069,27 @@ button:focus-visible {
   margin: 8px 0 20px;
 }
 
+.about-page {
+  width: min(calc(100% - clamp(40px, 8vw, 96px)), var(--container));
+}
+
+.about-page .section-header {
+  max-width: 920px;
+  margin-bottom: clamp(36px, 4vw, 52px);
+}
+
+.about-page .split-layout {
+  gap: clamp(36px, 5vw, 64px);
+}
+
+.about-page .prose-block > p {
+  margin: 0 0 1.4rem;
+}
+
+.about-page .resume-cta {
+  margin: clamp(26px, 3vw, 34px) 0 24px;
+}
+
 .timeline {
   display: grid;
   gap: 14px;
